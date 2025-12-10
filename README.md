@@ -1,2 +1,2 @@
 # k8s-cluster
-The kubernetes homelab
+The kubernetes homelab k8s-cluster
