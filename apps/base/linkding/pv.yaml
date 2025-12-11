@@ -3,6 +3,7 @@ kind: PersistentVolume
 metadata:
   name: linkding-pv
 spec:
+  accessModes: ReadWriteOnce
   capacity:
     storage: 1.5Gi
   local:
