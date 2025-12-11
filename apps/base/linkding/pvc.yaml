@@ -6,5 +6,6 @@ spec:
   accessModes:
   - ReadWriteOnce
   resources:
-    limits: 1.5Gi
-    requests: 1Gi
+    storage:
+      limits: 1.5Gi
+      requests: 1Gi
