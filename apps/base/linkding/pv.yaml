@@ -13,7 +13,7 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-          key: beta.kubernetes.io/arch
+          key: kubernetes.io/hostname
           operator: In
           values:
-            - amd64
+          - master
