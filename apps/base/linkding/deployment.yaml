@@ -17,3 +17,6 @@ spec:
           image: sissbruecker/linkding:1.31.0
           ports:
             - containerPort: 9090
+          volumeMounts:
+          - mountPath: /mnt/linkding-data
+            name: linkding-data-pvc
