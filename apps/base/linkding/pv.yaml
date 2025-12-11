@@ -8,3 +8,10 @@ spec:
     storage: 1.5Gi
   local:
     path: /mnt/linkding-pv
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            key: beta.kubernetes.io/arch
+            operator: In
+            values: amd64
