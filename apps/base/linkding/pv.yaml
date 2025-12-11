@@ -13,7 +13,7 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-          key: kubernetes.io/hostname
+        - key: kubernetes.io/hostname
           operator: In
           values:
           - master
