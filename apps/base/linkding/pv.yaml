@@ -12,7 +12,7 @@ spec:
   nodeAffinity:
     required:
       nodeSelectorTerms:
-        - matchExpressions:
-            key: beta.kubernetes.io/arch
-            operator: In
-            values: amd64
+      - matchExpressions:
+        - key: beta.kubernetes.io/arch
+          operator: In
+          values: amd64
