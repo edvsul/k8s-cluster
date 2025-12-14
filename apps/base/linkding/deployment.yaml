@@ -20,6 +20,8 @@ spec:
         volumeMounts:
         - mountPath: /etc/linkding/data
           name: linkding-pv
+      securityContext:
+	runAsNonRoot: true
       volumes:
       - name: linkding-pv
         persistentVolumeClaim:
