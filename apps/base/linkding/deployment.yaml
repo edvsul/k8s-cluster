@@ -23,6 +23,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
       securityContext:
+        fsGroup: 33
         runAsGroup: 33
         runAsNonRoot: true
         runAsUser: 33
