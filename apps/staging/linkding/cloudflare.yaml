@@ -25,7 +25,7 @@ spec:
             - name: TUNNEL_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: tunnel-credentials
+                  name: tunnel-token
                   key: token
           command:
             # Configures tunnel run parameters
