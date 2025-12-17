@@ -31,7 +31,7 @@ spec:
             # Configures tunnel run parameters
             - cloudflared
             - tunnel
-            - --config 
+            - --config
             - /etc/cloudflared/config/config.yaml
             - --no-autoupdate
             - --loglevel
@@ -70,9 +70,9 @@ kind: ConfigMap
 metadata:
   name: clouflared-cm
 data:
-  config.yaml |
+  config.yaml: |
     # Name of the tunnel you want to run
-    
+
     tunnel: ldk8s
 
     credentials-file: /etc/cloudflared/creds/credentials.json
