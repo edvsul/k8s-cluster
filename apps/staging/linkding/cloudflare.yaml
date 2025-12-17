@@ -68,7 +68,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: clouflared-cm
+  name: cloudflared-cm
 data:
   config.yaml: |
     # Name of the tunnel you want to run
