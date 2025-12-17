@@ -31,6 +31,8 @@ spec:
             # Configures tunnel run parameters
             - cloudflared
             - tunnel
+            - --config 
+            - /etc/cloudflared/config/cloudflared.yaml
             - --no-autoupdate
             - --loglevel
             - info
@@ -46,3 +48,49 @@ spec:
             failureThreshold: 1
             initialDelaySeconds: 10
             periodSeconds: 10
+          volumeMounts:
+          - name: tunnel-credentials
+            mountPath: /etc/cloudflared/creds
+            readOnly: true
+          - name: cloudflared-cm
+            mountPath: /etc/cloudflared/config
+            readOnly: true
+      volumes:
+      - name: tunnel-credentials
+        secret:
+          secretName: tunnel-credentials
+
+      - name: cloudflared-cm
+        configMap:
+          name: cloudflared-cm
+          items:
+            key: config.yaml
+            path: config.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clouflared-cm
+data:
+  config.yaml |
+    # Name of the tunnel you want to run
+    
+    tunnel: ldk8s
+
+    credentials-file: /etc/cloudflared/creds/credentials.json
+
+    # Serves the metrics server under /metrics and the readiness server under /ready
+    metrics: 0.0.0.0:2000
+    no-autoupdate: true
+
+    ingress:
+    - hostname: ld.edvsul.org
+      service: http://linkding:9090
+
+    # This rule sends traffic to the built-in hello-world HTTP server. This can help debug connectivity
+    # issues. If hello.example.com resolves and tunnel.example.com does not, then the problem is
+    # in the connection from cloudflared to your local service, not from the internet to cloudflared.
+    - hostname: hello.example.com
+      service: hello_world
+    # This rule matches any traffic which didn't match a previous rule, and responds with HTTP 404.
+    - service: http_status:404
