@@ -32,7 +32,7 @@ spec:
             - cloudflared
             - tunnel
             - --config 
-            - /etc/cloudflared/config/cloudflared.yaml
+            - /etc/cloudflared/config/config.yaml
             - --no-autoupdate
             - --loglevel
             - info
@@ -80,7 +80,7 @@ data:
     credentials-file: /etc/cloudflared/creds/credentials.json
 
     # Serves the metrics server under /metrics and the readiness server under /ready
-    #metrics: 0.0.0.0:2000
+    metrics: 0.0.0.0:2000
     no-autoupdate: true
 
     ingress:
