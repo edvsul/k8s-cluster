@@ -43,6 +43,8 @@ spec:
           - name: tunnel-creds
             mountPath: /etc/cloudflared/creds
             readOnly: true
+          - name: tunnel-cert
+            mountPath: /etc/cloudflared
           - name: cloudflared-cm
             mountPath: /etc/cloudflared/config
             readOnly: true
@@ -50,6 +52,9 @@ spec:
       - name: tunnel-creds
         secret:
           secretName: tunnel-credentials-json
+      - name: tunnel-cert
+        secret:
+          secretName: tunnel-cert-pem
       - name: cloudflared-cm
         configMap:
           name: cloudflared-cm
