@@ -20,13 +20,6 @@ spec:
       containers:
         - image: cloudflare/cloudflared:latest
           name: cloudflared
-          env:
-            # Defines an environment variable for the tunnel token.
-            - name: TUNNEL_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: tunnel-token
-                  key: token
           command:
             # Configures tunnel run parameters
             - cloudflared
@@ -47,17 +40,16 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
           volumeMounts:
-          - name: tunnel-credentials
+          - name: tunnel-creds
             mountPath: /etc/cloudflared/creds
             readOnly: true
           - name: cloudflared-cm
             mountPath: /etc/cloudflared/config
             readOnly: true
       volumes:
-      - name: tunnel-credentials
+      - name: tunnel-creds
         secret:
           secretName: tunnel-credentials
-
       - name: cloudflared-cm
         configMap:
           name: cloudflared-cm
