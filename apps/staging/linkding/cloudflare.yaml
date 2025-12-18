@@ -30,15 +30,15 @@ spec:
             - --loglevel
             - debug
             - run
-          livenessProbe:
-            httpGet:
-              # Cloudflared has a /ready endpoint which returns 200 if and only if
-              # it has an active connection to Cloudflare's network.
-              path: /ready
-              port: 2000
-            failureThreshold: 1
-            initialDelaySeconds: 10
-            periodSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     # Cloudflared has a /ready endpoint which returns 200 if and only if
+          #     # it has an active connection to Cloudflare's network.
+          #     path: /ready
+          #     port: 2000
+          #   failureThreshold: 1
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 10
           volumeMounts:
           - name: tunnel-creds
             mountPath: /etc/cloudflared/creds
