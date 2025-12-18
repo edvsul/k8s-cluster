@@ -28,7 +28,7 @@ spec:
             - /etc/cloudflared/config/config.yaml
             - --no-autoupdate
             - --loglevel
-            - debug
+            - trace
             - run
           livenessProbe:
             httpGet:
