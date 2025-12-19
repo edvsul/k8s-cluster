@@ -42,9 +42,6 @@ spec:
           volumeMounts:
           - name: tunnel-creds
             mountPath: /etc/cloudflared/creds
-            readOnly: true
-          #- name: tunnel-cert
-          #  mountPath: /etc/cloudflared
           - name: cloudflared-cm
             mountPath: /etc/cloudflared/config
             readOnly: true
@@ -52,9 +49,6 @@ spec:
       - name: tunnel-creds
         secret:
           secretName: tunnel-credentials
-      #- name: tunnel-cert
-      #  secret:
-      #    secretName: tunnel-cert-pem
       - name: cloudflared-cm
         configMap:
           name: cloudflared-cm
@@ -71,11 +65,10 @@ data:
     # Name of the tunnel you want to run
 
     tunnel: ldk8s
-    protocol: http2
 
     credentials-file: /etc/cloudflared/creds/credentials.json
     
-    #metrics: 0.0.0.0:2000
+    metrics: 0.0.0.0:2000
     no-autoupdate: true
 
     ingress:
