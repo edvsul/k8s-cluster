@@ -71,7 +71,7 @@ data:
     # Name of the tunnel you want to run
 
     tunnel: ldk8s
-    #protocol: http2
+    protocol: http2
 
     credentials-file: /etc/cloudflared/creds/credentials.json
 
