@@ -5,4 +5,4 @@ resources:
   - deployment.yaml
   - pvc.yaml
   - service.yaml
-  - secrets.yaml
+  #- secrets.yaml
