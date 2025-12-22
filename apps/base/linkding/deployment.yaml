@@ -22,17 +22,9 @@ spec:
           name: linkding-pv
         securityContext:
           allowPrivilegeEscalation: false
-        env:
-        - name: LD_SUPERUSER_NAME
-          valueFrom:
-            secretKeyRef:
-              name: linkding-credentials
-              key: LD_SUPERUSER_NAME
-        - name: LD_SUPERUSER_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: linkding-credentials
-              key: LD_SUPERUSER_PASSWORD
+        envFrom:
+        - secretRef:
+            name: linkding-credentials
       securityContext:
         fsGroup: 33
         runAsGroup: 33
