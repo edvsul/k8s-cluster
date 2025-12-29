@@ -28,3 +28,7 @@ spec:
   values:
     grafana:
       adminPassword: edvinas
+      ingress:
+        enabled: true
+        hosts:
+          - grafana.edvsul.org
