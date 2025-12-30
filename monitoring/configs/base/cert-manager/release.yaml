@@ -14,6 +14,9 @@ spec:
         name: cert-manager
         namespace: cert-manager
       interval: 12h
+# │     Message:               HelmChart 'cert-manager/cert-manager-cert-manager' is not ready: chart pull error: failed to download chart for remote reference: failed to get 'oci://qu │
+# │ ay.io/jetstack/charts/cert-manager/cert-manager:v1.19.0': failed to perform "FetchReference" on source: GET "https://quay.io/v2/jetstack/charts/cert-manager/cert-manager/manifests/ │
+# │ v1.19.0": response status code 401: unauthorized: access to the requested resource is not authorized: map[]
   install:
     crds: Create
   upgrade:
