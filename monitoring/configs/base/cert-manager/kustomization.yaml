@@ -3,3 +3,6 @@ kind: Kustomization
 resources:
   - cluster-issuer.yaml
   - bootstrapping-ca-issuers.yaml
+  - namespace.yaml
+  - repository.yaml
+  - release.yaml
