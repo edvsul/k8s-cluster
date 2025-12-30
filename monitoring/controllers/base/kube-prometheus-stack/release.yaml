@@ -32,3 +32,7 @@ spec:
         enabled: true
         hosts:
           - grafana.edvsul.org
+        # tls:
+        #   - secretName: grafana-general-tls
+        #     hosts:
+        #       - grafana.edvsul.org

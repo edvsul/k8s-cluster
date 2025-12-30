@@ -6,4 +6,3 @@ resources:
   - cloudflare.yaml
   - test-secret.yaml
   - tunnel-credentials.yaml
-  #- ingress.yaml
