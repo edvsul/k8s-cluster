@@ -5,4 +5,4 @@ resources:
   # - bootstrapping-ca-issuers.yaml
   - namespace.yaml
   - repository.yaml
-  - release.yaml
+  # - release.yaml
