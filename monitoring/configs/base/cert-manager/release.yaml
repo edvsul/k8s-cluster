@@ -1,20 +1,23 @@
-# apiVersion: helm.toolkit.fluxcd.io/v2
-# kind: HelmRelease
-# metadata:
-#   name: cert-manager
-#   namespace: cert-manager
-# spec:
-#   chartRef:
-#     kind: OCIRepository
-#     name: cert-manager
-#     namespace: cert-manager
-# # │     Message:               HelmChart 'cert-manager/cert-manager-cert-manager' is not ready: chart pull error: failed to download chart for remote reference: failed to get 'oci://qu │
-# # │ ay.io/jetstack/charts/cert-manager/cert-manager:v1.19.0': failed to perform "FetchReference" on source: GET "https://quay.io/v2/jetstack/charts/cert-manager/cert-manager/manifests/ │
-# # │ v1.19.0": response status code 401: unauthorized: access to the requested resource is not authorized: map[]
-#   install:
-#     crds: Create
-#   upgrade:
-#     crds: CreateReplace
-#   driftDetection:
-#     mode: enabled
-#   interval: 10m
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cert-manager
+  namespace: cert-manager
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: cert-manager
+      version: "1.19.0"
+      sourceRef:
+        kind: HelmRepository
+        name: cert-manager
+        namespace: cert-manager
+      interval: 12h
+  install:
+    crds: Create
+  upgrade:
+    crds: CreateReplace
+  driftDetection:
+    mode: enabled
+  interval: 10m
