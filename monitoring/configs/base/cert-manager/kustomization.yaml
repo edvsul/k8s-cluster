@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - cluster-issuer.yaml
   - bootstrapping-ca-issuers.yaml
+  - letsencrypt.yaml
   - namespace.yaml
   - repository.yaml
   - release.yaml
