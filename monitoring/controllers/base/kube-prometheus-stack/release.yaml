@@ -31,7 +31,7 @@ spec:
       ingress:
         enabled: true
         annotations:
-          cert-manager.io/cluster-issuer: "my-ca-issuer"
+          cert-manager.io/cluster-issuer: letsencrypt-staging
         hosts:
           - grafana.edvsul.org
         tls:
