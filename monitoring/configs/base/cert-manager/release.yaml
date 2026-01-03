@@ -14,8 +14,8 @@ spec:
         name: cert-manager
         namespace: cert-manager
       interval: 12h
-  install:
-    crds: Create
+  values:
+    installCRDs: true
   upgrade:
     crds: CreateReplace
   driftDetection:
