@@ -30,11 +30,9 @@ spec:
       adminPassword: edvinas
       ingress:
         enabled: true
-        annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-staging
         hosts:
           - grafana.edvsul.org
         tls:
-          - secretName: grafana-tls
+          - secretName: self-signed-certificate
             hosts:
               - grafana.edvsul.org
