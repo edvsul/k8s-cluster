@@ -6,3 +6,5 @@ metadata:
 spec:
   interval: 24h
   url: oci://quay.io/jetstack/charts
+  ref:
+    tag: v1.19.0
