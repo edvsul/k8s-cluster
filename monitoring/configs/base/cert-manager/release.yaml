@@ -20,4 +20,3 @@ spec:
     crds: CreateReplace
   driftDetection:
     mode: enabled
-  interval: 10m
