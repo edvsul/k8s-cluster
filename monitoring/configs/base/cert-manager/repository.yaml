@@ -5,4 +5,4 @@ metadata:
   namespace: cert-manager
 spec:
   type: "oci"
-  url: oci://quay.io/jetstack/charts
+  url: oci://quay.io/jetstack/charts/cert-manager
