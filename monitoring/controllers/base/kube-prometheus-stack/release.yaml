@@ -35,6 +35,6 @@ spec:
         hosts:
           - grafana.edvsul.org
         tls:
-          - secretName: grafana-tls
+          - secretName: grafana-tls-njfv5
             hosts:
               - grafana.edvsul.org
