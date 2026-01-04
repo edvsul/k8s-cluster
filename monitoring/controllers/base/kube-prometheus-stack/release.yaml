@@ -32,11 +32,11 @@ spec:
         enabled: true
         ingressClassName: traefik
         annotations:
-          kubernetes.io/ingress.class: traefik
-          kubernetes.io/tls-acme: "true"
           traefik.ingress.kubernetes.io/router.entrypoints: websecure
           traefik.ingress.kubernetes.io/router.tls: "true"
         hosts:
         - grafana.edvsul.org
         tls:
         - secretName: self-signed-certificate
+          hosts:
+          - grafana.edvsul.org
