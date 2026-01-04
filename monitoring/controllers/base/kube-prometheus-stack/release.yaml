@@ -22,17 +22,15 @@ spec:
     mode: enabled
     ignore:
       # Ignore "validated" annotation which is not inserted during install
-      - paths: ["/metadata/annotations/prometheus-operator-validated"]
-        target:
-          kind: PrometheusRule
+    - paths: ["/metadata/annotations/prometheus-operator-validated"]
+      target:
+        kind: PrometheusRule
   values:
     grafana:
       adminPassword: edvinas
       ingress:
         enabled: true
         hosts:
-          - grafana.edvsul.org
+        - grafana.edvsul.org
         tls:
-          - secretName: self-signed-certificate
-            hosts:
-              - grafana.edvsul.org
+        - secretName: self-signed-certificate
