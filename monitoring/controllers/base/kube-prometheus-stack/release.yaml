@@ -34,6 +34,6 @@ spec:
         hosts:
         - grafana.edvsul.org
         tls:
-        - secretName: self-signed-certificate
+        - secretName: grafana-tls-certificate
           hosts:
           - grafana.edvsul.org
