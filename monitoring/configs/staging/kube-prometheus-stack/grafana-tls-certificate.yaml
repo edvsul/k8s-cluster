@@ -5,6 +5,7 @@ data:
 kind: Secret
 metadata:
     name: grafana-tls-certificate
+    namespace: monitoring
 type: kubernetes.io/tls
 sops:
     age:
