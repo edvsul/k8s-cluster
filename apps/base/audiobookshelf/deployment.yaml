@@ -17,11 +17,6 @@ spec:
         envFrom:
         - configMapRef:
             name: audiobookshelf-configmap
-        securityContext:
-          fsGroup: 1000
-          runAsGroup: 1000
-          runAsNonRoot: true
-          runAsUser: 1000
         volumeMounts:
         - name: audiobookshelf-audiobooks
           mountPath: /audiobooks
@@ -31,6 +26,11 @@ spec:
           mountPath: /config
         - name: audiobookshelf-metadata
           mountPath: /metadata
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
       volumes:
       - name: audiobookshelf-audiobooks
         persistentVolumeClaim:
