@@ -29,3 +29,16 @@ spec:
           mountPath: /config
         - name: audiobooks-metadata
           mountPath: /metadata
+      volumes:
+      - name: audiobookshelf-audiobooks
+        persistentVolumeClaim:
+          claimName: audiobookshelf-data-pvc
+      - name: audiobookshelf-podcasts
+        persistentVolumeClaim:
+          claimName: audiobookshelf-data-pvc
+      - name: audiobookshelf-config
+        persistentVolumeClaim:
+          claimName: audiobookshelf-data-pvc
+      - name: audiobookshelf-metadata
+        persistentVolumeClaim:
+          claimName: audiobookshelf-data-pvc
