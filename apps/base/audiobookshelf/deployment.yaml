@@ -17,3 +17,15 @@ spec:
         envFrom:
         - configMapRef:
             name: audiobookshelf-configmap
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+        volumeMounts:
+        - name: audiobookshelf-audiobooks
+          mountPath: /audiobooks
+        - name: audiobookshelf-podcasts
+          mountPath: /podcasts
+        - name: audiobookshelf-config
+          mountPath: /config
+        - name: audiobooks-metadata
+          mountPath: /metadata
