@@ -27,7 +27,7 @@ spec:
           mountPath: /podcasts
         - name: audiobookshelf-config
           mountPath: /config
-        - name: audiobooks-metadata
+        - name: audiobookshelf-metadata
           mountPath: /metadata
       volumes:
       - name: audiobookshelf-audiobooks
