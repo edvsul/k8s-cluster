@@ -17,6 +17,8 @@ spec:
         envFrom:
         - configMapRef:
             name: audiobookshelf-configmap
+        securityContext:
+          allowPrivilegeEscalation: false
         volumeMounts:
         - name: audiobookshelf-audiobooks
           mountPath: /audiobooks
