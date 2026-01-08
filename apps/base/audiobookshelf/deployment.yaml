@@ -20,29 +20,29 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
         volumeMounts:
-        - name: audiobookshelf-audiobooks
-          mountPath: /audiobooks
-        - name: audiobookshelf-podcasts
-          mountPath: /podcasts
+        # - name: audiobookshelf-audiobooks
+        #   mountPath: /audiobooks
+        # - name: audiobookshelf-podcasts
+        #   mountPath: /podcasts
         - name: audiobookshelf-config
           mountPath: /config
-        - name: audiobookshelf-metadata
-          mountPath: /metadata
+        # - name: audiobookshelf-metadata
+        #   mountPath: /metadata
       securityContext:
         fsGroup: 1000
         runAsGroup: 1000
         runAsNonRoot: true
         runAsUser: 1000
       volumes:
-      - name: audiobookshelf-audiobooks
-        persistentVolumeClaim:
-          claimName: audiobookshelf-data-pvc
-      - name: audiobookshelf-podcasts
-        persistentVolumeClaim:
-          claimName: audiobookshelf-data-pvc
+      # - name: audiobookshelf-audiobooks
+      #   persistentVolumeClaim:
+      #     claimName: audiobookshelf-data-pvc
+      # - name: audiobookshelf-podcasts
+      #   persistentVolumeClaim:
+      #     claimName: audiobookshelf-data-pvc
       - name: audiobookshelf-config
         persistentVolumeClaim:
           claimName: audiobookshelf-data-pvc
-      - name: audiobookshelf-metadata
-        persistentVolumeClaim:
-          claimName: audiobookshelf-data-pvc
+      # - name: audiobookshelf-metadata
+      #   persistentVolumeClaim:
+      #     claimName: audiobookshelf-data-pvc
