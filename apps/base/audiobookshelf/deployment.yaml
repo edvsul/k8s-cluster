@@ -26,8 +26,8 @@ spec:
         #   mountPath: /podcasts
         - name: audiobookshelf-config
           mountPath: /config
-        # - name: audiobookshelf-metadata
-        #   mountPath: /metadata
+        - name: audiobookshelf-metadata
+          mountPath: /metadata
       securityContext:
         fsGroup: 1000
         runAsGroup: 1000
@@ -43,6 +43,6 @@ spec:
       - name: audiobookshelf-config
         persistentVolumeClaim:
           claimName: audiobookshelf-data-pvc
-      # - name: audiobookshelf-metadata
-      #   persistentVolumeClaim:
-      #     claimName: audiobookshelf-data-pvc
+      - name: audiobookshelf-metadata
+        persistentVolumeClaim:
+          claimName: audiobookshelf-data-pvc
