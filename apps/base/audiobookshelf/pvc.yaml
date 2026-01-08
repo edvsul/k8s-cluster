@@ -4,7 +4,7 @@ metadata:
   name: audiobookshelf-data-pvc
 spec:
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
   resources:
     requests:
       storage: 3Gi
