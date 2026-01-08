@@ -5,5 +5,5 @@ resources:
   - deployment.yaml
   - configmap.yaml
   - service.yaml
-  - pvc.yaml
+  # - pvc.yaml
   # - secrets.yaml
