@@ -6,4 +6,3 @@ resources:
   - configmap.yaml
   - service.yaml
   - pvc.yaml
-  # - secrets.yaml
