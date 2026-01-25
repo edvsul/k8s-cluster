@@ -4,9 +4,9 @@ The kubernetes homelab
 ## Infrastructure Specifications
 
 **Hardware:**
-- **System**: Dell Optiplex 7010
-- **CPU**: 2 cores
-- **RAM**: 8 GB
+- **Systems**: 2x Dell Optiplex 7010
+- **CPU**: 2 cores per system
+- **RAM**: 8 GB per system
 - **OS**: Ubuntu Server 24.04
 
 **Kubernetes Distribution:**
@@ -21,3 +21,12 @@ The kubernetes homelab
 
 - **GitOps Tool**: FluxCD
 - **Purpose**: Automated deployment and configuration management
+
+## Available Application Endpoints
+
+**Public Endpoints:**
+- **Linkding bookmarking**: https://ld.edvsul.org # https://linkding.link/
+- **Audiobookshelf**: https://audiobookshelf.edvsul.org # https://www.audiobookshelf.org/
+
+**VPN-Only Endpoints:**
+- **Grafana**: https://grafana.edvsul.org (requires Tailscale VPN)
