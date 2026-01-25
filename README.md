@@ -25,8 +25,8 @@ The kubernetes homelab
 ## Available Application Endpoints
 
 **Public Endpoints:**
-- **Linkding bookmarking**: https://ld.edvsul.org # https://linkding.link/
-- **Audiobookshelf**: https://audiobookshelf.edvsul.org # https://www.audiobookshelf.org/
+- **Linkding bookmarking**: https://ld.edvsul.org
+- **Audiobookshelf**: https://audiobookshelf.edvsul.org
 
 **VPN-Only Endpoints:**
 - **Grafana**: https://grafana.edvsul.org (requires Tailscale VPN)
