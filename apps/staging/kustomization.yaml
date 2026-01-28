@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - audiobookshelf
   - linkding
+  - n8n

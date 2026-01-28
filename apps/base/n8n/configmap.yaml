@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-cm
+data:
+  GENERIC_TIMEZONE: "Europe/Copenhagen"
+  TZ: "Europe/Copenhagen"
+  N8N_PORT: "3000"
+  N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+  N8N_RUNNERS_ENABLED: "true"
