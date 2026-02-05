@@ -3,6 +3,13 @@ The kubernetes homelab
 
 ## Infrastructure Specifications
 
+**Prerequisites:**
+- flux-cli https://fluxcd.io/flux/installation/#install-the-flux-cli
+- kubectl https://kubernetes.io/docs/tasks/tools/#kubectl
+- git https://git-scm.com/downloads
+- cloudflared https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/downloads/
+- sops https://fluxcd.io/flux/guides/mozilla-sops/
+
 **Hardware:**
 - **Systems**: 2x Dell Optiplex 7010
 - **CPU**: 2 cores per system
