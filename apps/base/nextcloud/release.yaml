@@ -14,7 +14,7 @@ spec:
         name: nextcloud
         namespace: nextcloud
       interval: 12h
-    values:
-      nextcloud:
-        trustedDomains:
-          - nextcloud.edvsul.org
+  values:
+    nextcloud:
+      trustedDomains:
+        - nextcloud.edvsul.org
