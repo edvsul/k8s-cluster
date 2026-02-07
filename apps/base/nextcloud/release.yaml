@@ -29,6 +29,5 @@ spec:
       securityContext:
         runAsUser: 33
         runAsGroup: 33
-        fsGroup: 33
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
