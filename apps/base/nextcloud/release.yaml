@@ -17,5 +17,5 @@ spec:
   values:
     nextcloud:
       host: nextcloud.edvsul.org
-    phpClientHttpsFix:
+    phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
