@@ -27,7 +27,17 @@ spec:
     nextcloud:
       host: nextcloud.edvsul.org
       securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        readOnlyRootFilesystem: false
         runAsUser: 33
         runAsGroup: 33
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+      podSecurityContext:
+        fsGroup: 33
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
