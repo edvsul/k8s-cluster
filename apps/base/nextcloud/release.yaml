@@ -17,6 +17,5 @@ spec:
   values:
     nextcloud:
       host: nextcloud.edvsul.org
-    extraEnv:
-    - name: OVERWRITEPROTOCOL # Fixes the nextcloud login issue
-      value: https
+    phpClientHttpsFix:
+      enabled: true
