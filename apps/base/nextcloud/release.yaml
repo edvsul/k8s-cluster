@@ -17,3 +17,4 @@ spec:
   values:
     nextcloud:
       host: nextcloud.edvsul.org
+    phpClientHttpsFix: true
