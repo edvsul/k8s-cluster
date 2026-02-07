@@ -14,8 +14,21 @@ spec:
         name: nextcloud
         namespace: nextcloud
       interval: 12h
+  valuesFrom:
+  - kind: Secret
+    name: nextcloud-creds
+    valuesKey: username
+    targetPath: nextcloud.username
+  - kind: Secret
+    name: nextcloud-creds
+    valuesKey: password
+    targetPath: nextcloud.password
   values:
     nextcloud:
       host: nextcloud.edvsul.org
+      securityContext:
+        runAsUser: 33
+        runAsGroup: 33
+        fsGroup: 33
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
