@@ -29,7 +29,6 @@ spec:
       securityContext:
         allowPrivilegeEscalation: false
         runAsNonRoot: true
-        readOnlyRootFilesystem: false
         runAsUser: 33
         runAsGroup: 33
         capabilities:
@@ -39,14 +38,11 @@ spec:
           type: RuntimeDefault
       podSecurityContext:
         fsGroup: 33
-      extraInitContainers:
-        - name: fix-data-permissions
-          image: busybox:latest
-          command:
-            - sh
-            - -c
-            - |
-              echo "Setting Nextcloud data directory permissions to 770..."
-              chmod 770 /var/www/html/data
+      phpConfigs:
+        custom.config.php: |
+          <?php
+            $CONFIG = array(
+              'check_data_directory_permissions' => false, # https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/
+            );
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
