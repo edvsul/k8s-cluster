@@ -26,8 +26,8 @@ spec:
   values:
     nextcloud:
       host: nextcloud.edvsul.org
-      securityContext:
-        runAsUser: 33
-        runAsGroup: 33
+      # securityContext:
+      #   runAsUser: 33
+      #   runAsGroup: 33
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
