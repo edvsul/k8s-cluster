@@ -39,6 +39,7 @@ spec:
       podSecurityContext:
         fsGroup: 33
       configs:
+        # Fixes the permissions issues when starting non root containers https://github.com/nextcloud/helm/issues/335#issuecomment-2318589992
         custom.config.php: |
           <?php
             $CONFIG = array(
