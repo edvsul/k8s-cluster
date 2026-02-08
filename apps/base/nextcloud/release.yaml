@@ -38,7 +38,7 @@ spec:
           type: RuntimeDefault
       podSecurityContext:
         fsGroup: 33
-      phpConfigs:
+      configs:
         custom.config.php: |
           <?php
             $CONFIG = array(
