@@ -31,10 +31,10 @@ spec:
         runAsNonRoot: true
         runAsUser: 33
         runAsGroup: 33
-        capabilities:
+        capabilities: # Drops all Linux capabilities
           drop:
             - ALL
-        seccompProfile:
+        seccompProfile: # Applies the container runtime's default secure computing mode profile
           type: RuntimeDefault
       podSecurityContext:
         fsGroup: 33
@@ -47,3 +47,7 @@ spec:
             );
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
+    externalDatabase:
+      host: postgresql
+      user: nextcloud
+      database: nextcloud

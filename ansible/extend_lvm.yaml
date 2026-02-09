@@ -1,0 +1,11 @@
+---
+- name: Extend LVM Logical Volume
+  hosts: all
+  become: yes
+  tasks:
+    - name: Extend logical volume to 65GB and resize filesystem
+      community.general.lvol:
+        vg: ubuntu-vg
+        lv: ubuntu-lv
+        size: 65G
+        resizefs: yes
