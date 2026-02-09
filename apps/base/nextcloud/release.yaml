@@ -49,5 +49,5 @@ spec:
       enabled: true
     externalDatabase:
       enabled: true
-      type: postgresql:5432
-      host: postgresql
+      type: postgresql
+      host: postgresql:5432
