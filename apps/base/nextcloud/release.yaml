@@ -48,6 +48,6 @@ spec:
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
     externalDatabase:
+      enabled: true
+      type: postgresql:5432
       host: postgresql
-      user: nextcloud
-      database: nextcloud
