@@ -44,16 +44,17 @@ spec:
           <?php
             $CONFIG = array(
               'check_data_directory_permissions' => false, # https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/
+              'maintenance_window_start' => 1, # Start maintenance window at 1 UTC time
             );
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
     internalDatabase:
-      enabled: false
+      enabled: false # turn off SQLite
     mariadb:
       enabled: true
       auth:
-        existingSecret: db-creds
+        existingSecret: db-creds # credentials for the mariadb container
     externalDatabase:
       existingSecret:
         enabled: true
-        secretName: nextcloud-db-creds
+        secretName: nextcloud-db-creds # credentials for the nextcloud application to connect to the mariadb database
