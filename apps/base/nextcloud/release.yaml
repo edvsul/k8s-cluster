@@ -51,6 +51,8 @@ spec:
       enabled: false
     mariadb:
       enabled: true
+      auth:
+        existingSecret: db-creds
     # externalDatabase:
     #   enabled: true
     #   type: postgresql
