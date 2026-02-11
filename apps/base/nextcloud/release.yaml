@@ -56,3 +56,4 @@ spec:
     externalDatabase:
       existingSecret:
         enabled: true
+        secretName: db-creds
