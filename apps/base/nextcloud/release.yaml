@@ -47,8 +47,10 @@ spec:
             );
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
-    # internalDatabase:
-    #   enabled: false
+    internalDatabase:
+      enabled: false
+    postgresql:
+      enabled: true
     # externalDatabase:
     #   enabled: true
     #   type: postgresql
