@@ -56,4 +56,4 @@ spec:
     externalDatabase:
       existingSecret:
         enabled: true
-        secretName: db-creds
+        secretName: nextcloud-db-creds
