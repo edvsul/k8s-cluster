@@ -3,7 +3,7 @@
   hosts: master
   become: yes
   tasks:
-    - name: Extend logical volume to 65GB and resize filesystem
+    - name: Extend logical volume and resize filesystem
       community.general.lvol:
         vg: ubuntu-vg
         lv: ubuntu-lv
@@ -14,9 +14,9 @@
   hosts: slave
   become: yes
   tasks:
-    - name: Extend logical volume to 75GB and resize filesystem
+    - name: Extend logical volume and resize filesystem
       community.general.lvol:
         vg: ubuntu-vg
         lv: ubuntu-lv
-        size: 75G
+        size: 95G
         resizefs: yes
