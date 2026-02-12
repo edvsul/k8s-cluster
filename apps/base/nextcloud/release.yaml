@@ -2,7 +2,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: nextcloud
-  namespace: nextcloud
 spec:
   interval: 30m
   chart:
@@ -46,6 +45,9 @@ spec:
               'check_data_directory_permissions' => false, # https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/
               'maintenance_window_start' => 1, # Start maintenance window at 1 UTC time
             );
+    persistence:
+      enabled: true
+      size: 10Gi
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
     internalDatabase:
