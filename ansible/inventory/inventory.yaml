@@ -1,0 +1,15 @@
+---
+k3s_cluster:
+  children:
+    server:
+      hosts:
+        10.0.0.78:
+    agent:
+      hosts:
+        10.0.0.77:
+
+  # Required Vars
+  vars:
+    ansible_port: 22
+    ansible_user: admin
+    k3s_version: v1.34.1+k3s1

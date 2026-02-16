@@ -1,6 +1,6 @@
 ---
 - name: Extend LVM Logical Volume
-  hosts: master
+  hosts: server
   become: yes
   tasks:
     - name: Extend logical volume and resize filesystem
@@ -11,7 +11,7 @@
         resizefs: yes
 
 - name: Extend LVM Logical Volume
-  hosts: slave
+  hosts: agent
   become: yes
   tasks:
     - name: Extend logical volume and resize filesystem
