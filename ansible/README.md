@@ -56,7 +56,7 @@ Backups are stored in:
 After installing a new K3s cluster and bootstrapping Flux, restore your PVCs:
 
 ```bash
-ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/restore_pvcs.yaml -e "namespace=nextcloud"
+ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/restore_pvcs.yaml
 ```
 
 ## Uninstall k3s
