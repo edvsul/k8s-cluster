@@ -1,160 +1,31 @@
 ---
-- name: Restore K3s Local-Path PVC Data
-  hosts: localhost
-  connection: local
-  become: no
-  vars:
-    local_backup_dir: "../../../k3s-backups"
-  
-  tasks:
-    - name: Display restore instructions
-      ansible.builtin.debug:
-        msg: |
-          ========================================
-          K3s PVC Data Restore Process
-          ========================================
-          
-          Prerequisites:
-          1. New K3s cluster is installed and running
-          2. Flux is bootstrapped and syncing your GitOps repository
-          3. Applications are deployed (PVCs created and bound)
-          4. kubectl is configured to access the new cluster
-          
-          This playbook will:
-          1. Read the PVC mapping from backup
-          2. Match old PVCs to new PVCs by name/namespace
-          3. Copy backup data to new PV paths on nodes
-          4. Fix permissions
-          
-          ========================================
-
-    - name: Check if backup directory exists
-      ansible.builtin.stat:
-        path: "{{ local_backup_dir }}"
-      register: backup_dir_stat
-
-    - name: Fail if backup directory doesn't exist
-      ansible.builtin.fail:
-        msg: "Backup directory {{ local_backup_dir }} not found. Run backup_pvcs.yaml first."
-      when: not backup_dir_stat.stat.exists
-
-    - name: Check kubectl connectivity
-      ansible.builtin.shell: kubectl --kubeconfig=../../../k3s.yaml cluster-info
-      register: kubectl_check
-      changed_when: false
-      failed_when: kubectl_check.rc != 0
-
-    - name: Load PVC mapping from backup
-      ansible.builtin.shell: cat {{ local_backup_dir }}/pvc-mapping.yaml
-      register: pvc_mapping_content
-      changed_when: false
-
-    - name: Parse PVC mapping
-      ansible.builtin.set_fact:
-        old_pvcs: "{{ (pvc_mapping_content.stdout | from_yaml).items | selectattr('kind', 'equalto', 'PersistentVolumeClaim') | list }}"
-        old_pvs: "{{ (pvc_mapping_content.stdout | from_yaml).items | selectattr('kind', 'equalto', 'PersistentVolume') | list }}"
-
-    - name: Display namespaces found in backup
-      ansible.builtin.debug:
-        msg: "Found PVCs in namespaces: {{ old_pvcs | map(attribute='metadata.namespace') | unique | list }}"
-
-    - name: Get current PVCs from cluster
-      ansible.builtin.shell: kubectl --kubeconfig=../../../k3s.yaml get pvc -A -o json
-      register: current_pvcs_raw
-      changed_when: false
-
-    - name: Parse current PVCs
-      ansible.builtin.set_fact:
-        current_pvcs: "{{ (current_pvcs_raw.stdout | from_json).items }}"
-
-    - name: Get current PVs from cluster
-      ansible.builtin.shell: kubectl --kubeconfig=../../../k3s.yaml get pv -o json
-      register: current_pvs_raw
-      changed_when: false
-
-    - name: Parse current PVs
-      ansible.builtin.set_fact:
-        current_pvs: "{{ (current_pvs_raw.stdout | from_json).items }}"
-
-    - name: Build restore mapping
-      ansible.builtin.set_fact:
-        restore_map: "{{ restore_map | default([]) + [mapping] }}"
-      loop: "{{ current_pvcs }}"
-      vars:
-        pvc_name: "{{ item.metadata.name }}"
-        pvc_namespace: "{{ item.metadata.namespace }}"
-        new_pv_name: "{{ item.spec.volumeName | default('') }}"
-        new_pv: "{{ current_pvs | selectattr('metadata.name', 'equalto', new_pv_name) | first | default({}) }}"
-        new_pv_path: "{{ new_pv.spec.local.path | default('') }}"
-        new_pv_node: "{{ new_pv.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0] | default('') }}"
-        old_pvc: "{{ old_pvcs | selectattr('metadata.name', 'equalto', pvc_name) | selectattr('metadata.namespace', 'equalto', pvc_namespace) | first | default({}) }}"
-        old_pv_uid: "{{ old_pvc.spec.volumeName | default('') }}"
-        old_pv: "{{ old_pvs | selectattr('metadata.name', 'equalto', old_pv_uid) | first | default({}) }}"
-        old_pv_path: "{{ old_pv.spec.local.path | default('') }}"
-        old_pv_node: "{{ old_pv.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0] | default('') }}"
-        backup_file_pattern: "{{ old_pv_uid }}_{{ pvc_namespace }}_{{ pvc_name }}_*.tar.gz"
-        mapping:
-          metadata:
-            name: "{{ pvc_name }}"
-            namespace: "{{ pvc_namespace }}"
-          new_pv_path: "{{ new_pv_path }}"
-          new_pv_node: "{{ new_pv_node }}"
-          old_pv_path: "{{ old_pv_path }}"
-          old_pv_node: "{{ old_pv_node }}"
-          backup_file_pattern: "{{ backup_file_pattern }}"
-      when: 
-        - item.status.phase == 'Bound'
-        - new_pv_path != ''
-        - old_pv_path != ''
-      loop_control:
-        label: "{{ pvc_namespace }}/{{ pvc_name }}"
-
-    - name: Display restore mapping
-      ansible.builtin.debug:
-        msg: |
-          Will restore {{ restore_map | default([]) | length }} PVC(s):
-          {% for item in restore_map | default([]) %}
-          - {{ item.metadata.namespace }}/{{ item.metadata.name }}
-            Old: {{ item.old_pv_node }}:{{ item.old_pv_path }}
-            New: {{ item.new_pv_node }}:{{ item.new_pv_path }}
-            Backup: {{ item.backup_file_pattern }}
-          {% endfor %}
-
-    - name: Fail if no PVCs to restore
-      ansible.builtin.fail:
-        msg: "No matching PVCs found to restore. Ensure PVCs are created and bound in the cluster."
-      when: restore_map is not defined or restore_map | length == 0
-
-    - name: Confirm restore
-      ansible.builtin.pause:
-        prompt: "Ready to restore {{ restore_map | length }} PVC(s). Press enter to continue or Ctrl+C to abort..."
-
-- name: Copy backup data to nodes
+- name: Restore K3s Local-Path PVCs
   hosts: all
   become: yes
   vars:
     local_backup_dir: "../../../k3s-backups"
-    restore_temp_dir: "/tmp/k3s-pvc-restore"
+    restore_base_dir: "/restore/k3s-pvcs"
+    k3s_storage_dir: "/var/lib/rancher/k3s/storage"
   
   tasks:
-    - name: Get restore mapping from localhost
-      ansible.builtin.set_fact:
-        restore_map: "{{ hostvars['localhost']['restore_map'] | default([]) }}"
+    - name: Load PVC mapping file
+      ansible.builtin.include_vars:
+        file: "{{ local_backup_dir }}/pvc-mapping.yaml"
+        name: pvc_mapping
+      delegate_to: localhost
+      become: no
+      run_once: true
 
-    - name: Filter PVCs for this node
-      ansible.builtin.set_fact:
-        node_pvcs: "{{ restore_map | selectattr('new_pv_node', 'equalto', inventory_hostname) | list }}"
-
-    - name: Display PVCs to restore on this node
-      ansible.builtin.debug:
-        msg: "Restoring {{ node_pvcs | length }} PVC(s) on {{ inventory_hostname }}"
-
-    - name: Create temp restore directory
+    - name: Clean up old restore directory if present
       ansible.builtin.file:
-        path: "{{ restore_temp_dir }}"
+        path: "{{ restore_base_dir }}"
+        state: absent
+
+    - name: Create restore directory on remote nodes
+      ansible.builtin.file:
+        path: "{{ restore_base_dir }}"
         state: directory
         mode: '0755'
-      when: node_pvcs | length > 0
 
     - name: Find backup files for this node
       ansible.builtin.find:
@@ -162,73 +33,148 @@
         patterns: "*.tar.gz"
       delegate_to: localhost
       become: no
-      register: backup_files
-      when: node_pvcs | length > 0
+      register: backup_files_local
 
-    - name: Copy backup files to node
+    - name: Display found backups
+      ansible.builtin.debug:
+        msg: "Found {{ backup_files_local.files | length }} backup(s) for {{ inventory_hostname }}"
+
+    - name: Transfer backup files to remote node
       ansible.builtin.copy:
         src: "{{ item.path }}"
-        dest: "{{ restore_temp_dir }}/"
+        dest: "{{ restore_base_dir }}/{{ item.path | basename }}"
         mode: '0644'
-      loop: "{{ backup_files.files }}"
-      when: 
-        - node_pvcs | length > 0
-        - backup_files.files is defined
-      loop_control:
-        label: "{{ item.path | basename }}"
+      loop: "{{ backup_files_local.files }}"
+      when: backup_files_local.files | length > 0
 
-    - name: Extract backup data to PV paths
+    - name: Extract PVC ID from backup filename
+      ansible.builtin.set_fact:
+        pvc_restores: "{{ pvc_restores | default([]) + [{'backup_file': item.path | basename, 'pvc_id': item.path | basename | regex_replace('^(pvc-[a-f0-9-]+)_.*', '\\1')}] }}"
+      loop: "{{ backup_files_local.files }}"
+      when: backup_files_local.files | length > 0
+
+    - name: Get K3s node hostname
+      ansible.builtin.command: hostname
+      register: k3s_node_hostname
+      changed_when: false
+
+    - name: Get PV details from mapping for this node
+      ansible.builtin.set_fact:
+        node_pvs: "{{ node_pvs | default([]) + [item] }}"
+      loop: "{{ pvc_mapping['items'] | default([]) }}"
+      when:
+        - pvc_restores is defined
+        - item.kind == 'PersistentVolume'
+        - item.metadata.annotations['local.path.provisioner/selected-node'] == k3s_node_hostname.stdout
+
+    - name: Create PV directories
+      ansible.builtin.file:
+        path: "{{ item.spec.local.path }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ node_pvs }}"
+      when: 
+        - pvc_restores is defined
+        - node_pvs is defined
+        - node_pvs | length > 0
+
+    - name: Restore PVC data from backups to old directories
       ansible.builtin.shell: |
-        # Find the backup file for this PVC
-        backup_file=$(ls {{ restore_temp_dir }}/{{ item.backup_file_pattern }} 2>/dev/null | head -1)
-        if [ -z "$backup_file" ]; then
-          echo "ERROR: Backup file not found for pattern {{ item.backup_file_pattern }}"
+        pvc_id="{{ item.0.pvc_id }}"
+        backup_file="{{ restore_base_dir }}/{{ item.0.backup_file }}"
+        pv_path="{{ item.1.spec.local.path }}"
+        
+        if [ -f "${backup_file}" ] && [ -d "${pv_path}" ]; then
+          echo "Restoring ${pvc_id} to ${pv_path}"
+          tar -xzf "${backup_file}" -C "${pv_path}"
+          echo "Restored successfully"
+        else
+          echo "Skipping: backup or destination not found"
           exit 1
         fi
-        
-        # Create PV directory if it doesn't exist
-        mkdir -p {{ item.new_pv_path }}
-        
-        # Extract backup to PV path (tar preserves original permissions)
-        tar -xzf "$backup_file" -C {{ item.new_pv_path }}
-        
-        echo "Restored $backup_file to {{ item.new_pv_path }}"
-      loop: "{{ node_pvcs }}"
-      register: extract_result
-      loop_control:
-        label: "{{ item.metadata.namespace }}/{{ item.metadata.name }}"
+      loop: "{{ pvc_restores | product(node_pvs) | list }}"
+      when:
+        - pvc_restores is defined
+        - node_pvs is defined
+        - item.0.pvc_id in item.1.metadata.name
+      register: restore_results
+      failed_when: false
 
-    - name: Clean up temp restore directory
+    - name: Find all PVC directories on this node
+      ansible.builtin.find:
+        paths: "{{ k3s_storage_dir }}"
+        patterns: "pvc-*"
+        file_type: directory
+      register: all_pvc_dirs
+
+    - name: Copy data from old to new PVC directories (same namespace/name)
+      ansible.builtin.shell: |
+        cd {{ k3s_storage_dir }}
+        
+        old_dir="{{ item }}"
+        old_name=$(basename "${old_dir}")
+        
+        # Get namespace and pvc name (format: pvc-UUID_namespace_pvcname)
+        namespace=$(echo "${old_name}" | cut -d'_' -f2)
+        pvc_name=$(echo "${old_name}" | cut -d'_' -f3-)
+        
+        # Find new directory with different UUID but same namespace_pvcname
+        new_dir=$(ls -d pvc-*_${namespace}_${pvc_name} 2>/dev/null | grep -v "^${old_name}$" | head -n1)
+        
+        if [ -z "${new_dir}" ]; then
+          echo "SKIP: No new directory found"
+          exit 0
+        fi
+        
+        echo "OLD: ${old_name}"
+        echo "NEW: ${new_dir}"
+        
+        # Clear new directory and copy from old to new
+        rm -rf "${new_dir}"/*
+        rm -rf "${new_dir}"/.[!.]* 2>/dev/null || true
+        cp -a "${old_dir}/." "${new_dir}/"
+        
+        echo "COPIED"
+        echo "REMOVE:${old_dir}"
+      loop: "{{ all_pvc_dirs.files | map(attribute='path') | list }}"
+      when:
+        - all_pvc_dirs.files is defined
+        - all_pvc_dirs.files | length > 0
+      register: copy_results
+      failed_when: false
+
+    - name: Remove old PVC directories after successful copy
       ansible.builtin.file:
-        path: "{{ restore_temp_dir }}"
+        path: "{{ item.stdout | regex_search('REMOVE:(.+)', '\\1') | first }}"
         state: absent
-      when: node_pvcs | length > 0
+      loop: "{{ copy_results.results | default([]) }}"
+      when:
+        - copy_results is defined
+        - copy_results.results is defined
+        - "'REMOVE:' in item.stdout"
 
-- name: Display completion message
+    - name: Clean up restore directory
+      ansible.builtin.file:
+        path: "{{ restore_base_dir }}"
+        state: absent
+
+- name: Verify restoration
   hosts: localhost
   connection: local
   become: no
   
   tasks:
-    - name: Display final instructions
+    - name: Display completion message
       ansible.builtin.debug:
         msg: |
-          ========================================
-          Restore Complete
-          ========================================
+          PVC restore completed!
           
-          PVC data has been restored to the new cluster.
+          Prerequisites (must be done before running this playbook):
+          - K3s is already installed and running on all nodes
+          - Applications are deployed via GitOps (Flux) to create PVCs
+          - PVCs exist and are bound to PVs
           
           Next steps:
-          1. Verify pods are starting:
-             kubectl --kubeconfig=../../../k3s.yaml get pods -A
-          
-          2. Check application logs:
-             kubectl --kubeconfig=../../../k3s.yaml logs -n <namespace> <pod-name>
-          
-          3. Monitor Flux reconciliation:
-             flux get all -A
-          
-          Applications should start automatically now that data is restored.
-          
-          ========================================
+          1. Verify PVC data in /var/lib/rancher/k3s/storage on each node
+          2. Restart application pods to pick up restored data
+          3. Verify applications are functioning correctly with restored data
