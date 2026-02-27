@@ -78,103 +78,103 @@
         - node_pvs is defined
         - node_pvs | length > 0
 
-    - name: Restore PVC data from backups to old directories
-      ansible.builtin.shell: |
-        pvc_id="{{ item.0.pvc_id }}"
-        backup_file="{{ restore_base_dir }}/{{ item.0.backup_file }}"
-        pv_path="{{ item.1.spec.local.path }}"
+#     - name: Restore PVC data from backups to old directories
+#       ansible.builtin.shell: |
+#         pvc_id="{{ item.0.pvc_id }}"
+#         backup_file="{{ restore_base_dir }}/{{ item.0.backup_file }}"
+#         pv_path="{{ item.1.spec.local.path }}"
         
-        if [ -f "${backup_file}" ] && [ -d "${pv_path}" ]; then
-          echo "Restoring ${pvc_id} to ${pv_path}"
-          tar -xzf "${backup_file}" -C "${pv_path}"
-          echo "Restored successfully"
-        else
-          echo "Skipping: backup or destination not found"
-          exit 1
-        fi
-      loop: "{{ pvc_restores | product(node_pvs) | list }}"
-      when:
-        - pvc_restores is defined
-        - node_pvs is defined
-        - item.0.pvc_id in item.1.metadata.name
-      register: restore_results
-      failed_when: false
+#         if [ -f "${backup_file}" ] && [ -d "${pv_path}" ]; then
+#           echo "Restoring ${pvc_id} to ${pv_path}"
+#           tar -xzf "${backup_file}" -C "${pv_path}"
+#           echo "Restored successfully"
+#         else
+#           echo "Skipping: backup or destination not found"
+#           exit 1
+#         fi
+#       loop: "{{ pvc_restores | product(node_pvs) | list }}"
+#       when:
+#         - pvc_restores is defined
+#         - node_pvs is defined
+#         - item.0.pvc_id in item.1.metadata.name
+#       register: restore_results
+#       failed_when: false
 
-    - name: Find all PVC directories on this node
-      ansible.builtin.find:
-        paths: "{{ k3s_storage_dir }}"
-        patterns: "pvc-*"
-        file_type: directory
-      register: all_pvc_dirs
+#     - name: Find all PVC directories on this node
+#       ansible.builtin.find:
+#         paths: "{{ k3s_storage_dir }}"
+#         patterns: "pvc-*"
+#         file_type: directory
+#       register: all_pvc_dirs
 
-    - name: Copy data from old to new PVC directories (same namespace/name)
-      ansible.builtin.shell: |
-        cd {{ k3s_storage_dir }}
+#     - name: Copy data from old to new PVC directories (same namespace/name)
+#       ansible.builtin.shell: |
+#         cd {{ k3s_storage_dir }}
         
-        old_dir="{{ item }}"
-        old_name=$(basename "${old_dir}")
+#         old_dir="{{ item }}"
+#         old_name=$(basename "${old_dir}")
         
-        # Get namespace and pvc name (format: pvc-UUID_namespace_pvcname)
-        namespace=$(echo "${old_name}" | cut -d'_' -f2)
-        pvc_name=$(echo "${old_name}" | cut -d'_' -f3-)
+#         # Get namespace and pvc name (format: pvc-UUID_namespace_pvcname)
+#         namespace=$(echo "${old_name}" | cut -d'_' -f2)
+#         pvc_name=$(echo "${old_name}" | cut -d'_' -f3-)
         
-        # Find new directory with different UUID but same namespace_pvcname
-        new_dir=$(ls -d pvc-*_${namespace}_${pvc_name} 2>/dev/null | grep -v "^${old_name}$" | head -n1)
+#         # Find new directory with different UUID but same namespace_pvcname
+#         new_dir=$(ls -d pvc-*_${namespace}_${pvc_name} 2>/dev/null | grep -v "^${old_name}$" | head -n1)
         
-        if [ -z "${new_dir}" ]; then
-          echo "SKIP: No new directory found"
-          exit 0
-        fi
+#         if [ -z "${new_dir}" ]; then
+#           echo "SKIP: No new directory found"
+#           exit 0
+#         fi
         
-        echo "OLD: ${old_name}"
-        echo "NEW: ${new_dir}"
+#         echo "OLD: ${old_name}"
+#         echo "NEW: ${new_dir}"
         
-        # Clear new directory and copy from old to new
-        rm -rf "${new_dir}"/*
-        rm -rf "${new_dir}"/.[!.]* 2>/dev/null || true
-        cp -a "${old_dir}/." "${new_dir}/"
+#         # Clear new directory and copy from old to new
+#         rm -rf "${new_dir}"/*
+#         rm -rf "${new_dir}"/.[!.]* 2>/dev/null || true
+#         cp -a "${old_dir}/." "${new_dir}/"
         
-        echo "COPIED"
-        echo "REMOVE:${old_dir}"
-      loop: "{{ all_pvc_dirs.files | map(attribute='path') | list }}"
-      when:
-        - all_pvc_dirs.files is defined
-        - all_pvc_dirs.files | length > 0
-      register: copy_results
-      failed_when: false
+#         echo "COPIED"
+#         echo "REMOVE:${old_dir}"
+#       loop: "{{ all_pvc_dirs.files | map(attribute='path') | list }}"
+#       when:
+#         - all_pvc_dirs.files is defined
+#         - all_pvc_dirs.files | length > 0
+#       register: copy_results
+#       failed_when: false
 
-    - name: Remove old PVC directories after successful copy
-      ansible.builtin.file:
-        path: "{{ item.stdout | regex_search('REMOVE:(.+)', '\\1') | first }}"
-        state: absent
-      loop: "{{ copy_results.results | default([]) }}"
-      when:
-        - copy_results is defined
-        - copy_results.results is defined
-        - "'REMOVE:' in item.stdout"
+#     - name: Remove old PVC directories after successful copy
+#       ansible.builtin.file:
+#         path: "{{ item.stdout | regex_search('REMOVE:(.+)', '\\1') | first }}"
+#         state: absent
+#       loop: "{{ copy_results.results | default([]) }}"
+#       when:
+#         - copy_results is defined
+#         - copy_results.results is defined
+#         - "'REMOVE:' in item.stdout"
 
-    - name: Clean up restore directory
-      ansible.builtin.file:
-        path: "{{ restore_base_dir }}"
-        state: absent
+#     - name: Clean up restore directory
+#       ansible.builtin.file:
+#         path: "{{ restore_base_dir }}"
+#         state: absent
 
-- name: Verify restoration
-  hosts: localhost
-  connection: local
-  become: no
+# - name: Verify restoration
+#   hosts: localhost
+#   connection: local
+#   become: no
   
-  tasks:
-    - name: Display completion message
-      ansible.builtin.debug:
-        msg: |
-          PVC restore completed!
+#   tasks:
+#     - name: Display completion message
+#       ansible.builtin.debug:
+#         msg: |
+#           PVC restore completed!
           
-          Prerequisites (must be done before running this playbook):
-          - K3s is already installed and running on all nodes
-          - Applications are deployed via GitOps (Flux) to create PVCs
-          - PVCs exist and are bound to PVs
+#           Prerequisites (must be done before running this playbook):
+#           - K3s is already installed and running on all nodes
+#           - Applications are deployed via GitOps (Flux) to create PVCs
+#           - PVCs exist and are bound to PVs
           
-          Next steps:
-          1. Verify PVC data in /var/lib/rancher/k3s/storage on each node
-          2. Restart application pods to pick up restored data
-          3. Verify applications are functioning correctly with restored data
+#           Next steps:
+#           1. Verify PVC data in /var/lib/rancher/k3s/storage on each node
+#           2. Restart application pods to pick up restored data
+#           3. Verify applications are functioning correctly with restored data
