@@ -53,35 +53,23 @@
       loop: "{{ backup_files_local.files }}"
       when: backup_files_local.files | length > 0
 
-    - name: Get K3s node hostname
-      ansible.builtin.command: hostname
-      register: k3s_node_hostname
-      changed_when: false
+    - name: Find existing PVC directories on this node
+      ansible.builtin.find:
+        paths: "{{ k3s_storage_dir }}"
+        patterns: "pvc-*"
+        file_type: directory
+      register: existing_pvc_dirs
 
-    - name: Get PV details from mapping for this node
+    - name: Extract namespace and PVC name from existing directories
       ansible.builtin.set_fact:
-        node_pvs: "{{ node_pvs | default([]) + [item] }}"
-      loop: "{{ pvc_mapping['items'] | default([]) }}"
-      when:
-        - pvc_restores is defined
-        - item.kind == 'PersistentVolume'
-        - item.metadata.annotations['local.path.provisioner/selected-node'] == k3s_node_hostname.stdout
+        existing_pvcs: "{{ existing_pvcs | default([]) + [{'path': item.path, 'namespace': item.path | basename | regex_replace('^pvc-[a-f0-9-]+_([^_]+)_.*', '\\1'), 'pvc_name': item.path | basename | regex_replace('^pvc-[a-f0-9-]+_[^_]+_(.+)$', '\\1')}] }}"
+      loop: "{{ existing_pvc_dirs.files }}"
+      when: existing_pvc_dirs.files | length > 0
 
-    - name: Create PV directories
-      ansible.builtin.file:
-        path: "{{ item.spec.local.path }}"
-        state: directory
-        mode: '0755'
-      loop: "{{ node_pvs }}"
-      when: 
-        - pvc_restores is defined
-        - node_pvs is defined
-        - node_pvs | length > 0
-
-    - name: Restore PVC data from backups directly to new PVCs
+    - name: Restore PVC data from backups to existing PVC directories
       ansible.builtin.shell: |
         backup_file="{{ restore_base_dir }}/{{ item.0.backup_file }}"
-        pv_path="{{ item.1.spec.local.path }}"
+        pv_path="{{ item.1.path }}"
         namespace="{{ item.0.namespace }}"
         pvc_name="{{ item.0.pvc_name }}"
         
@@ -106,12 +94,12 @@
           echo "Skipping: backup or destination not found"
           exit 1
         fi
-      loop: "{{ pvc_restores | product(node_pvs) | list }}"
+      loop: "{{ pvc_restores | product(existing_pvcs) | list }}"
       when:
         - pvc_restores is defined
-        - node_pvs is defined
-        - item.0.namespace == item.1.spec.claimRef.namespace
-        - item.0.pvc_name == item.1.spec.claimRef.name
+        - existing_pvcs is defined
+        - item.0.namespace == item.1.namespace
+        - item.0.pvc_name == item.1.pvc_name
       register: restore_results
       failed_when: false
 
