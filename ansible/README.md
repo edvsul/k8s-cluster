@@ -59,6 +59,12 @@ After installing a new K3s cluster and bootstrapping Flux, restore your PVCs:
 ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/restore_pvcs.yaml
 ```
 
+Nextcloud needs to rescan the files to update its database. When you restored the PVC data, the files are there on disk, but Nextcloud's database doesn't know about them yet. Run the following command to rescan the files:
+
+```bash
+kubectl -n nextcloud exec -it deployment/nextcloud -- /bin/bash -c "php occ files:scan edvinas"
+```
+
 ## Uninstall k3s
 
 ```bash

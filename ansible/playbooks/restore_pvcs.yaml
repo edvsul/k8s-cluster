@@ -78,27 +78,27 @@
         - node_pvs is defined
         - node_pvs | length > 0
 
-#     - name: Restore PVC data from backups to old directories
-#       ansible.builtin.shell: |
-#         pvc_id="{{ item.0.pvc_id }}"
-#         backup_file="{{ restore_base_dir }}/{{ item.0.backup_file }}"
-#         pv_path="{{ item.1.spec.local.path }}"
+    - name: Restore PVC data from backups to old directories
+      ansible.builtin.shell: |
+        pvc_id="{{ item.0.pvc_id }}"
+        backup_file="{{ restore_base_dir }}/{{ item.0.backup_file }}"
+        pv_path="{{ item.1.spec.local.path }}"
         
-#         if [ -f "${backup_file}" ] && [ -d "${pv_path}" ]; then
-#           echo "Restoring ${pvc_id} to ${pv_path}"
-#           tar -xzf "${backup_file}" -C "${pv_path}"
-#           echo "Restored successfully"
-#         else
-#           echo "Skipping: backup or destination not found"
-#           exit 1
-#         fi
-#       loop: "{{ pvc_restores | product(node_pvs) | list }}"
-#       when:
-#         - pvc_restores is defined
-#         - node_pvs is defined
-#         - item.0.pvc_id in item.1.metadata.name
-#       register: restore_results
-#       failed_when: false
+        if [ -f "${backup_file}" ] && [ -d "${pv_path}" ]; then
+          echo "Restoring ${pvc_id} to ${pv_path}"
+          tar -xzf "${backup_file}" -C "${pv_path}"
+          echo "Restored successfully"
+        else
+          echo "Skipping: backup or destination not found"
+          exit 1
+        fi
+      loop: "{{ pvc_restores | product(node_pvs) | list }}"
+      when:
+        - pvc_restores is defined
+        - node_pvs is defined
+        - item.0.pvc_id in item.1.metadata.name
+      register: restore_results
+      failed_when: false
 
 #     - name: Find all PVC directories on this node
 #       ansible.builtin.find:
