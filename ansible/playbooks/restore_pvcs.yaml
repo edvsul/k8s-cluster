@@ -47,9 +47,9 @@
       loop: "{{ backup_files_local.files }}"
       when: backup_files_local.files | length > 0
 
-    - name: Extract PVC ID from backup filename
+    - name: Extract namespace and PVC name from backup filename
       ansible.builtin.set_fact:
-        pvc_restores: "{{ pvc_restores | default([]) + [{'backup_file': item.path | basename, 'pvc_id': item.path | basename | regex_replace('^(pvc-[a-f0-9-]+)_.*', '\\1')}] }}"
+        pvc_restores: "{{ pvc_restores | default([]) + [{'backup_file': item.path | basename, 'namespace': item.path | basename | regex_replace('^pvc-[a-f0-9-]+_([^_]+)_.*', '\\1'), 'pvc_name': item.path | basename | regex_replace('^pvc-[a-f0-9-]+_[^_]+_(.+)_[0-9T]+\\.tar\\.gz$', '\\1')}] }}"
       loop: "{{ backup_files_local.files }}"
       when: backup_files_local.files | length > 0
 
@@ -80,12 +80,13 @@
 
     - name: Restore PVC data from backups directly to new PVCs
       ansible.builtin.shell: |
-        pvc_id="{{ item.0.pvc_id }}"
         backup_file="{{ restore_base_dir }}/{{ item.0.backup_file }}"
         pv_path="{{ item.1.spec.local.path }}"
+        namespace="{{ item.0.namespace }}"
+        pvc_name="{{ item.0.pvc_name }}"
         
         if [ -f "${backup_file}" ] && [ -d "${pv_path}" ]; then
-          echo "Restoring ${pvc_id} to ${pv_path}"
+          echo "Restoring ${namespace}/${pvc_name} to ${pv_path}"
           
           # Clear existing contents
           echo "Clearing existing data..."
@@ -109,7 +110,8 @@
       when:
         - pvc_restores is defined
         - node_pvs is defined
-        - item.0.pvc_id in item.1.metadata.name
+        - item.0.namespace == item.1.spec.claimRef.namespace
+        - item.0.pvc_name == item.1.spec.claimRef.name
       register: restore_results
       failed_when: false
 
