@@ -54,6 +54,9 @@ spec:
       enabled: false # turn off SQLite
     mariadb:
       enabled: true
+      primary:
+        persistence:
+          enabled: true
       auth:
         existingSecret: db-creds # credentials for the mariadb container
     externalDatabase:
