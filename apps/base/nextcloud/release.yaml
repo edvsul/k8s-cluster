@@ -57,6 +57,7 @@ spec:
       primary:
         persistence:
           enabled: true
+          size: 8Gi
       auth:
         existingSecret: db-creds # credentials for the mariadb container
     externalDatabase:
