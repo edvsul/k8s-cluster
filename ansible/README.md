@@ -24,6 +24,14 @@ See [k3s-ansible](https://github.com/k3s-io/k3s-ansible) for upgrade instruction
 ansible-galaxy collection install git+https://github.com/k3s-io/k3s-ansible.git
 ```
 
+## Install K3s
+
+Install K3s cluster and download kubeconfig:
+
+```bash
+ansible-playbook k3s.orchestration.site -i inventory/inventory.yaml --tags kubeconfig
+```
+
 ## Backup and Restore PVCs
 
 ### Backup PVCs Before Uninstalling K3s
