@@ -57,6 +57,8 @@ The kubernetes homelab
      --personal
    ```
 
+5. **Create the SOPS age secret** in the `flux-system` namespace for decrypting encrypted secrets.
+
 ## Available Application Endpoints
 
 **Public Endpoints:**
