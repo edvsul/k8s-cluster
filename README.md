@@ -29,6 +29,34 @@ The kubernetes homelab
 - **GitOps Tool**: FluxCD
 - **Purpose**: Automated deployment and configuration management
 
+### Bootstrap FluxCD
+
+1. **Set GitHub credentials**:
+   ```bash
+   export GITHUB_TOKEN=<your-token>
+   export GITHUB_USER=<your-username>
+   ```
+
+2. **Install Flux CLI**:
+   ```bash
+   brew install fluxcd/tap/flux
+   ```
+
+3. **Verify prerequisites**:
+   ```bash
+   flux check --pre
+   ```
+
+4. **Bootstrap Flux to the cluster**:
+   ```bash
+   flux bootstrap github \
+     --owner=$GITHUB_USER \
+     --repository=k8s-cluster \
+     --branch=main \
+     --path=./clusters/staging \
+     --personal
+   ```
+
 ## Available Application Endpoints
 
 **Public Endpoints:**
