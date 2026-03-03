@@ -63,7 +63,7 @@ The kubernetes homelab
 
 **Public Endpoints:**
 - **Linkding bookmarking**: https://ld.edvsul.org
-- **Audiobookshelf**: https://audiobookshelf.edvsul.org
+- **Nextcloud**: https://nextcloud.edvsul.org
 
 **VPN-Only Endpoints:**
 - **Grafana**: https://grafana.edvsul.org (requires Tailscale VPN)
