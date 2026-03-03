@@ -1,11 +1,14 @@
 ## Prerequisites
 
-### Install python3.12 >=
+### Install Python 3.12 or higher
 
 ### Install ansible-core
-python3 -m pip install ansible-core
 
-## Run playbook
+```bash
+python3 -m pip install ansible-core
+```
+
+## Run Playbook
 
 ```bash
 ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/extend_lvm.yaml
@@ -13,9 +16,9 @@ ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/extend_l
 
 ## Upgrade
 
-https://github.com/k3s-io/k3s-ansible
+See [k3s-ansible](https://github.com/k3s-io/k3s-ansible) for upgrade instructions.
 
-## Install k3s-ansible collection
+## Install k3s-ansible Collection
 
 ```bash
 ansible-galaxy collection install git+https://github.com/k3s-io/k3s-ansible.git
@@ -59,13 +62,17 @@ After installing a new K3s cluster and bootstrapping Flux, restore your PVCs:
 ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/restore_pvcs.yaml
 ```
 
-Nextcloud needs to rescan the files to update its database. When you restored the PVC data, the files are there on disk, but Nextcloud's database doesn't know about them yet. Run the following command to rescan the files:
+#### Post-Restore: Nextcloud File Scan
+
+After restoring Nextcloud PVC data, rescan files to update the database:
 
 ```bash
 kubectl -n nextcloud exec -it deployment/nextcloud -- /bin/bash -c "php occ files:scan edvinas"
 ```
 
-## Uninstall k3s
+This is necessary because the restored files exist on disk, but Nextcloud's database doesn't know about them until the scan completes.
+
+## Uninstall K3s
 
 ```bash
 ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/uninstall_k3s.yaml
