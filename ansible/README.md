@@ -24,6 +24,19 @@ See [k3s-ansible](https://github.com/k3s-io/k3s-ansible) for upgrade instruction
 ansible-galaxy collection install git+https://github.com/k3s-io/k3s-ansible.git
 ```
 
+## Prepare Nodes for K3s
+
+Before installing K3s, prepare your nodes by updating packages, disabling swap, and configuring firewall:
+
+```bash
+ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/prepare_k3s.yaml
+```
+
+This will:
+- Update apt cache and upgrade all Ubuntu packages
+- Disable swap immediately and remove from `/etc/fstab`
+- Stop and disable firewalld service
+
 ## Install K3s
 
 Install K3s cluster and download kubeconfig:
