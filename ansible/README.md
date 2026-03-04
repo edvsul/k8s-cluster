@@ -83,6 +83,17 @@ After installing a new K3s cluster and bootstrapping Flux, restore your PVCs:
 ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/restore_pvcs.yaml
 ```
 
+**Important:** After restoring PVC data, restart the application pods to ensure they pick up the restored data:
+
+```bash
+kubectl delete pod -n <namespace> -l app=<app-name>
+```
+
+For example, to restart linkding:
+```bash
+kubectl delete pod -n linkding -l app=linkding
+```
+
 #### Post-Restore: Nextcloud File Scan
 
 After restoring Nextcloud PVC data, rescan files to update the database:
