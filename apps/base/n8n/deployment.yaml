@@ -16,6 +16,7 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+        runAsNonRoot: true
       containers:
       - name: n8n
         image: docker.n8n.io/n8nio/n8n:2.11.1
@@ -27,6 +28,13 @@ spec:
         volumeMounts:
         - name: n8n-pvc
           mountPath: /home/node/.n8n
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 200m
+          limits:
+            memory: 512Mi
+            cpu: 500m
         securityContext:
           allowPrivilegeEscalation: false
       volumes:

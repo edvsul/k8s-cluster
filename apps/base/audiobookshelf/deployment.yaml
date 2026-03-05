@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: audiobookshelf
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: audiobookshelf
@@ -11,14 +12,19 @@ spec:
       labels:
         app: audiobookshelf
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
       containers:
       - name: audiobookshelf
         image: ghcr.io/advplyr/audiobookshelf:2.32.1
+        ports:
+        - containerPort: 80
         envFrom:
         - configMapRef:
             name: audiobookshelf-configmap
-        securityContext:
-          allowPrivilegeEscalation: false
         volumeMounts:
         - name: audiobookshelf-audiobooks
           mountPath: /audiobooks
@@ -28,11 +34,15 @@ spec:
           mountPath: /config
         - name: audiobookshelf-metadata
           mountPath: /metadata
-      securityContext:
-        fsGroup: 1000
-        runAsGroup: 1000
-        runAsNonRoot: true
-        runAsUser: 1000
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 200m
+          limits:
+            memory: 512Mi
+            cpu: 500m
+        securityContext:
+          allowPrivilegeEscalation: false
       volumes:
       - name: audiobookshelf-audiobooks
         persistentVolumeClaim:

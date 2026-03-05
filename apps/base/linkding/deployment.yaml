@@ -12,30 +12,31 @@ spec:
       labels:
         app: linkding
     spec:
+      securityContext:
+        runAsUser: 33
+        runAsGroup: 33
+        fsGroup: 33
+        runAsNonRoot: true
       containers:
       - name: linkding
         image: sissbruecker/linkding:1.45.0
         ports:
-          - containerPort: 9090
-        volumeMounts:
-        - mountPath: /etc/linkding/data
-          name: linkding-pv
-        securityContext:
-          allowPrivilegeEscalation: false
+        - containerPort: 9090
         envFrom:
         - secretRef:
             name: linkding-credentials
-      resources:
-        memory:
-          requests: 128Mi
-          limits: 256Mi
-        cpu:
-          requests: 100m
-      securityContext:
-        fsGroup: 33
-        runAsGroup: 33
-        runAsNonRoot: true
-        runAsUser: 33
+        volumeMounts:
+        - name: linkding-pv
+          mountPath: /etc/linkding/data
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 100m
+          limits:
+            memory: 256Mi
+            cpu: 200m
+        securityContext:
+          allowPrivilegeEscalation: false
       volumes:
       - name: linkding-pv
         persistentVolumeClaim:
