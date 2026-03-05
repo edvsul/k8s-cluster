@@ -25,6 +25,12 @@ spec:
         envFrom:
         - secretRef:
             name: linkding-credentials
+      resources:
+        memory:
+          requests: 128Mi
+          limits: 256Mi
+        cpu:
+          requests: 100m
       securityContext:
         fsGroup: 33
         runAsGroup: 33
