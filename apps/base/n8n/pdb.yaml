@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: n8n-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: n8n

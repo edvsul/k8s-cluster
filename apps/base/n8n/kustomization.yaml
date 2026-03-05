@@ -7,3 +7,4 @@ resources:
   - configmap.yaml
   - pvc.yaml
   - service.yaml
+  - pdb.yaml
