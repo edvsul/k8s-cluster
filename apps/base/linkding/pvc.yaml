@@ -6,7 +6,6 @@ spec:
   accessModes:
   - ReadWriteOnce
   resources:
-    limits:
-      storage: 1.5Gi
     requests:
       storage: 1Gi
+  storageClassName: longhorn-k8s-cluster

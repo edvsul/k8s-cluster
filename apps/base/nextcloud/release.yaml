@@ -47,6 +47,7 @@ spec:
             );
     persistence:
       enabled: true
+      storageClass: longhorn-k8s-cluster
       size: 10Gi
     resources:
       requests:
@@ -62,6 +63,7 @@ spec:
       primary:
         persistence:
           enabled: true
+          storageClass: longhorn-k8s-cluster
           size: 8Gi
       auth:
         existingSecret: db-creds # credentials for the mariadb container
