@@ -75,24 +75,79 @@ Backups are stored in:
 └── pvc-mapping.yaml
 ```
 
-### Restore PVCs to New K3s Cluster
+### Restore PVCs to Longhorn Volumes
 
-After installing a new K3s cluster and bootstrapping Flux, restore your PVCs:
+After installing a new K3s cluster, bootstrapping Flux, and deploying applications with Longhorn storage, restore your PVCs manually using temporary pods:
 
-```bash
-ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/restore_pvcs.yaml
-```
-
-**Important:** After restoring PVC data, restart the application pods to ensure they pick up the restored data:
+#### 1. Scale Down Applications
 
 ```bash
-kubectl delete pod -n <namespace> -l app=<app-name>
+# Scale down the application to release the PVC
+kubectl scale deployment <app-name> -n <namespace> --replicas=0
+
+# For StatefulSets (e.g., MariaDB)
+kubectl scale statefulset <statefulset-name> -n <namespace> --replicas=0
 ```
 
-For example, to restart linkding:
+#### 2. Create Temporary Restore Pod
+
 ```bash
-kubectl delete pod -n linkding -l app=linkding
+kubectl run <app-name>-restore \
+  -n <namespace> \
+  --image=ubuntu:22.04 \
+  --restart=Never \
+  --overrides='{
+    "spec": {
+      "containers": [{
+        "name": "restore",
+        "image": "ubuntu:22.04",
+        "command": ["sleep", "3600"],
+        "volumeMounts": [{
+          "name": "data",
+          "mountPath": "/restore"
+        }]
+      }],
+      "volumes": [{
+        "name": "data",
+        "persistentVolumeClaim": {
+          "claimName": "<pvc-name>"
+        }
+      }]
+    }
+  }'
 ```
+
+#### 3. Wait for Pod to be Ready
+
+```bash
+kubectl wait --for=condition=Ready pod/<app-name>-restore -n <namespace> --timeout=120s
+```
+
+#### 4. Copy and Extract Backup
+
+```bash
+# Copy backup to pod
+kubectl cp ../k3s-backups/<node>/pvc-<uuid>_<namespace>_<pvc-name>_<timestamp>.tar.gz \
+  <namespace>/<app-name>-restore:/tmp/backup.tar.gz
+
+# Extract inside the pod
+kubectl exec -n <namespace> <app-name>-restore -- tar -xzf /tmp/backup.tar.gz -C /restore
+
+# Verify data
+kubectl exec -n <namespace> <app-name>-restore -- ls -la /restore
+```
+
+#### 5. Cleanup and Scale Up
+
+```bash
+# Delete restore pod
+kubectl delete pod <app-name>-restore -n <namespace>
+
+# Scale application back up
+kubectl scale deployment <app-name> -n <namespace> --replicas=1
+```
+
+**Note:** The mount path `/restore` is arbitrary. The important part is that the temporary pod mounts the same PVC that the application uses. Longhorn automatically replicates the data across nodes as you extract it.
 
 #### Post-Restore: Nextcloud File Scan
 
@@ -101,8 +156,6 @@ After restoring Nextcloud PVC data, rescan files to update the database:
 ```bash
 kubectl -n nextcloud exec -it deployment/nextcloud -- /bin/bash -c "php occ files:scan edvinas"
 ```
-
-This is necessary because the restored files exist on disk, but Nextcloud's database doesn't know about them until the scan completes.
 
 ## Uninstall K3s
 
