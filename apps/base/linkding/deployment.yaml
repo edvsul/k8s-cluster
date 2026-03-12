@@ -22,6 +22,18 @@ spec:
         image: sissbruecker/linkding:1.45.0
         ports:
         - containerPort: 9090
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9090
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 5
         envFrom:
         - secretRef:
             name: linkding-credentials
