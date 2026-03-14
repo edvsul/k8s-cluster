@@ -14,7 +14,3 @@ spec:
         name: kyverno
         namespace: kyverno
       interval: 12h
-  values:
-    crds:
-      migration:
-        enabled: false
