@@ -14,6 +14,3 @@ spec:
         name: kyverno
         namespace: kyverno
       interval: 12h
-  values:
-    admissionController:
-      replicas: 3
