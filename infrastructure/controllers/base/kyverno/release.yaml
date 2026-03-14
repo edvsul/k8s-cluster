@@ -14,3 +14,7 @@ spec:
         name: kyverno
         namespace: kyverno
       interval: 12h
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
