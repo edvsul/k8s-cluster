@@ -18,3 +18,10 @@ spec:
     crds: CreateReplace
   upgrade:
     crds: CreateReplace
+  values:
+    cleanupController:
+      enabled: false
+    backgroundController:
+      enabled: false
+    reportsController:
+      enabled: false
