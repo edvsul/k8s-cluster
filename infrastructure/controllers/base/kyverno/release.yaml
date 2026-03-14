@@ -18,13 +18,6 @@ spec:
     crds: CreateReplace
   upgrade:
     crds: CreateReplace
-  values:
-    cleanupController:
-      enabled: false
-    backgroundController:
-      enabled: false
-    reportsController:
-      enabled: false
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -43,4 +36,3 @@ spec:
         namespace: kyverno
   values:
     podSecurityStandard: restricted
-    
