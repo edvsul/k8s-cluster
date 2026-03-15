@@ -13,6 +13,14 @@ spec:
           containers:
           - name: renovate
             image: renovate/renovate:latest
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsNonRoot: true
+              capabilities:
+                drop:
+                  - ALL
+              seccompProfile:
+                type: RuntimeDefault
             args:
             - edvsul/k8s-cluster
 
