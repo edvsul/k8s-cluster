@@ -52,6 +52,11 @@ spec:
             cpu: 1m
           limits:
             memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
       volumes:
       - name: linkding-pv
         persistentVolumeClaim:
