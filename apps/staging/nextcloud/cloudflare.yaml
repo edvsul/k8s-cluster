@@ -13,10 +13,17 @@ spec:
         pod: cloudflared
     spec:
       securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
         sysctls:
         # Allows ICMP traffic (ping, traceroute) to resources behind cloudflared.
           - name: net.ipv4.ping_group_range
             value: "65532 65532"
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - image: cloudflare/cloudflared:latest
           name: cloudflared
