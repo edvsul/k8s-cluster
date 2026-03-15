@@ -35,6 +35,14 @@ spec:
             - ALL
         seccompProfile: # Applies the container runtime's default secure computing mode profile
           type: RuntimeDefault
+      mariaDbInitContainer:
+        allowPrivilegeEscalation: false
+        securityContext:
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
       podSecurityContext:
         fsGroup: 33
       configs:
