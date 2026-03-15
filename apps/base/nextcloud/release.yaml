@@ -36,8 +36,11 @@ spec:
         seccompProfile: # Applies the container runtime's default secure computing mode profile
           type: RuntimeDefault
       mariaDbInitContainer:
-        allowPrivilegeEscalation: false
         securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 33
+          runAsGroup: 33
           capabilities:
             drop:
               - ALL
