@@ -36,3 +36,4 @@ spec:
         namespace: kyverno
   values:
     podSecurityStandard: restricted
+    validationFailureAction: "Enforce"
