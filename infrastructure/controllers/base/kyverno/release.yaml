@@ -18,6 +18,12 @@ spec:
     crds: CreateReplace
   upgrade:
     crds: CreateReplace
+  values:
+    config:
+      resourceFiltersExcludeNamespaces:
+        - kube-system
+        - longhorn-system
+        - monitoring
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
