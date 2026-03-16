@@ -18,21 +18,6 @@ spec:
     crds: CreateReplace
   upgrade:
     crds: CreateReplace
-  values:
-    # Configure admission controller to skip system namespaces
-    config:
-      webhooks:
-        - namespaceSelector:
-            matchExpressions:
-            - key: kubernetes.io/metadata.name
-              operator: NotIn
-              values:
-              - kube-system
-              - kube-public
-              - kube-node-lease
-              - longhorn-system
-              - monitoring
-              - kyverno
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease

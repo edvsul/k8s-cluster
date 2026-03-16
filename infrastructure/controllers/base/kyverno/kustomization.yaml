@@ -4,4 +4,3 @@ resources:
   - namespace.yaml
   - repository.yaml
   - release.yaml
-  #- policy-exceptions.yaml
