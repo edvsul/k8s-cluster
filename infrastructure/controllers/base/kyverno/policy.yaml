@@ -30,6 +30,7 @@ spec:
                 - monitoring
                 - kyverno
                 - flux-system
+                - renovate
       validate:
         message: Liveness, readiness, or startup probes are required for all containers.
         foreach:
