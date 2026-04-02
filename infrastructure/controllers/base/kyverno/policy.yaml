@@ -1,3 +1,26 @@
+# Define reusable blocks as anchors
+x-match-pods: &match-pods
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+
+x-exclude-system-namespaces: &exclude-system-namespaces
+  exclude:
+    any:
+      - resources:
+          namespaces:
+            - kube-system
+            - kube-public
+            - kube-node-lease
+            - longhorn-system
+            - monitoring
+            - kyverno
+            - flux-system
+            - renovate
+
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -12,68 +35,38 @@ metadata:
       Implements the complete Pod Security Standards restricted profile plus additional
       best practices including required probes and resource limits.
 spec:
-  #validationFailureAction: Enforce
   background: true
   rules:
-    # Rule 1: Disallow capabilities (strict)
-    - name: disallow-capabilities-strict
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
+    # Rule 1: Require dropping ALL capabilities
+    - name: require-drop-all-capabilities
+      <<: *match-pods
+      <<: *exclude-system-namespaces
       validate:
-        message: >-
-          All capabilities must be dropped. Only NET_BIND_SERVICE can be added back.
-        foreach:
-          - list: "request.object.spec.[ephemeralContainers, initContainers, containers][]"
-            deny:
-              conditions:
-                any:
-                  - key: "{{ element.securityContext.capabilities.drop || `[]` }}"
-                    operator: NotEquals
-                    value: ["ALL"]
-                  - key: "{{ element.securityContext.capabilities.add || `[]` }}"
-                    operator: AnyNotIn
-                    value: ["", "NET_BIND_SERVICE"]
+        message: "All capabilities must be dropped. Set securityContext.capabilities.drop: [ALL]"
+        pattern:
+          spec:
+            =(ephemeralContainers):
+              - =(securityContext):
+                  =(capabilities):
+                    drop:
+                      - ALL
+            =(initContainers):
+              - =(securityContext):
+                  =(capabilities):
+                    drop:
+                      - ALL
+            containers:
+              - =(securityContext):
+                  =(capabilities):
+                    drop:
+                      - ALL
 
     # Rule 2: Disallow privilege escalation
     - name: disallow-privilege-escalation
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
+      <<: *match-pods
+      <<: *exclude-system-namespaces
       validate:
-        message: >-
-          Privilege escalation is disallowed. The fields
-          spec.containers[*].securityContext.allowPrivilegeEscalation,
-          spec.initContainers[*].securityContext.allowPrivilegeEscalation, and
-          spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation must be set to false.
+        message: "Privilege escalation is disallowed. Set allowPrivilegeEscalation: false"
         pattern:
           spec:
             =(ephemeralContainers):
@@ -88,29 +81,10 @@ spec:
 
     # Rule 3: Require runAsNonRoot
     - name: require-run-as-nonroot
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
+      <<: *match-pods
+      <<: *exclude-system-namespaces
       validate:
-        message: >-
-          Running as root is not allowed. Either the field spec.securityContext.runAsNonRoot
-          must be set to true, or the fields spec.containers[*].securityContext.runAsNonRoot,
-          spec.initContainers[*].securityContext.runAsNonRoot, and
-          spec.ephemeralContainers[*].securityContext.runAsNonRoot must be set to true.
+        message: "Running as root is not allowed. Set runAsNonRoot: true"
         anyPattern:
           - spec:
               securityContext:
@@ -137,29 +111,10 @@ spec:
 
     # Rule 4: Require runAsUser > 0
     - name: require-run-as-non-root-user
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
+      <<: *match-pods
+      <<: *exclude-system-namespaces
       validate:
-        message: >-
-          Running as root user (UID 0) is not allowed. The fields
-          spec.securityContext.runAsUser, spec.containers[*].securityContext.runAsUser,
-          spec.initContainers[*].securityContext.runAsUser, and
-          spec.ephemeralContainers[*].securityContext.runAsUser must be greater than 0.
+        message: "Running as root user (UID 0) is not allowed. Set runAsUser > 0"
         pattern:
           spec:
             =(securityContext):
@@ -176,31 +131,10 @@ spec:
 
     # Rule 5: Restrict seccomp (strict)
     - name: restrict-seccomp-strict
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
+      <<: *match-pods
+      <<: *exclude-system-namespaces
       validate:
-        message: >-
-          Use of custom seccomp profiles is disallowed. The fields
-          spec.securityContext.seccompProfile.type,
-          spec.containers[*].securityContext.seccompProfile.type,
-          spec.initContainers[*].securityContext.seccompProfile.type, and
-          spec.ephemeralContainers[*].securityContext.seccompProfile.type
-          must be set to RuntimeDefault or Localhost.
+        message: "Seccomp profile must be RuntimeDefault or Localhost"
         pattern:
           spec:
             =(securityContext):
@@ -221,132 +155,50 @@ spec:
 
     # Rule 6: Restrict volume types
     - name: restrict-volume-types
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
+      <<: *match-pods
+      <<: *exclude-system-namespaces
       validate:
-        message: >-
-          Only the following volume types are allowed: configMap, csi, downwardAPI,
-          emptyDir, ephemeral, persistentVolumeClaim, projected, secret.
-        deny:
-          conditions:
-            all:
-              - key: "{{ request.object.spec.volumes[].keys(@)[] | length(@) }}"
-                operator: GreaterThan
-                value: 0
-              - key: "{{ request.object.spec.volumes[].keys(@)[] }}"
-                operator: AnyNotIn
-                value:
-                  - name
-                  - configMap
-                  - csi
-                  - downwardAPI
-                  - emptyDir
-                  - ephemeral
-                  - persistentVolumeClaim
-                  - projected
-                  - secret
+        message: "Only configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret volumes are allowed"
+        pattern:
+          spec:
+            =(volumes):
+              - =(configMap): "?*"
+              - =(csi): "?*"
+              - =(downwardAPI): "?*"
+              - =(emptyDir): "?*"
+              - =(ephemeral): "?*"
+              - =(persistentVolumeClaim): "?*"
+              - =(projected): "?*"
+              - =(secret): "?*"
 
     # Rule 7: Require pod probes
     - name: require-pod-probes
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
+      <<: *match-pods
+      <<: *exclude-system-namespaces
       validate:
-        message: "At least one probe (liveness, readiness, or startup) is required for container {{ element.name }}"
-        foreach:
-          - list: "request.object.spec.containers[]"
-            deny:
-              conditions:
-                all:
-                  - key: "{{ element.livenessProbe || element.readinessProbe || element.startupProbe || '' }}"
-                    operator: Equals
-                    value: ""
+        message: "Containers must have at least one probe (liveness, readiness, or startup)"
+        anyPattern:
+          - spec:
+              containers:
+                - livenessProbe: "?*"
+          - spec:
+              containers:
+                - readinessProbe: "?*"
+          - spec:
+              containers:
+                - startupProbe: "?*"
 
-    # Rule 8: Require memory requests
-    - name: require-memory-requests
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
+    # Rule 8: Require memory requests and limits
+    - name: require-memory-resources
+      <<: *match-pods
+      <<: *exclude-system-namespaces
       validate:
-        message: "Memory requests are required for container {{ element.name }}"
-        foreach:
-          - list: "request.object.spec.containers[]"
-            deny:
-              conditions:
-                any:
-                  - key: "{{ element.resources.requests.memory || '' }}"
-                    operator: Equals
-                    value: ""
-
-    # Rule 9: Require memory limits
-    - name: require-memory-limits
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
-      validate:
-        message: "Memory limits are required for container {{ element.name }}"
-        foreach:
-          - list: "request.object.spec.containers[]"
-            deny:
-              conditions:
-                any:
-                  - key: "{{ element.resources.limits.memory || '' }}"
-                    operator: Equals
-                    value: ""
+        message: "Memory requests and limits are required for all containers"
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  requests:
+                    memory: "?*"
+                  limits:
+                    memory: "?*"
