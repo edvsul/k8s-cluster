@@ -1,12 +1,10 @@
-# Define reusable blocks as anchors
-x-match-pods: &match-pods
+# Define reusable block as anchor
+x-match-and-exclude: &match-and-exclude
   match:
     any:
       - resources:
           kinds:
             - Pod
-
-x-exclude-system-namespaces: &exclude-system-namespaces
   exclude:
     any:
       - resources:
@@ -34,12 +32,12 @@ metadata:
       Implements the complete Pod Security Standards restricted profile plus additional
       best practices including required probes and resource limits.
 spec:
+  validationFailureAction: Audit
   background: true
   rules:
     # Rule 1: Require dropping ALL capabilities
     - name: require-drop-all-capabilities
-      <<: *match-pods
-      <<: *exclude-system-namespaces
+      <<: *match-and-exclude
       validate:
         message: "All capabilities must be dropped. Set securityContext.capabilities.drop: [ALL]"
         pattern:
@@ -62,8 +60,7 @@ spec:
 
     # Rule 2: Disallow privilege escalation
     - name: disallow-privilege-escalation
-      <<: *match-pods
-      <<: *exclude-system-namespaces
+      <<: *match-and-exclude
       validate:
         message: "Privilege escalation is disallowed. Set allowPrivilegeEscalation: false"
         pattern:
@@ -80,8 +77,7 @@ spec:
 
     # Rule 3: Require runAsNonRoot
     - name: require-run-as-nonroot
-      <<: *match-pods
-      <<: *exclude-system-namespaces
+      <<: *match-and-exclude
       validate:
         message: "Running as root is not allowed. Set runAsNonRoot: true"
         anyPattern:
@@ -110,8 +106,7 @@ spec:
 
     # Rule 4: Require runAsUser > 0
     - name: require-run-as-non-root-user
-      <<: *match-pods
-      <<: *exclude-system-namespaces
+      <<: *match-and-exclude
       validate:
         message: "Running as root user (UID 0) is not allowed. Set runAsUser > 0"
         pattern:
@@ -130,8 +125,7 @@ spec:
 
     # Rule 5: Restrict seccomp (strict)
     - name: restrict-seccomp-strict
-      <<: *match-pods
-      <<: *exclude-system-namespaces
+      <<: *match-and-exclude
       validate:
         message: "Seccomp profile must be RuntimeDefault or Localhost"
         pattern:
@@ -154,8 +148,7 @@ spec:
 
     # Rule 6: Restrict volume types
     - name: restrict-volume-types
-      <<: *match-pods
-      <<: *exclude-system-namespaces
+      <<: *match-and-exclude
       validate:
         message: "Only configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret volumes are allowed"
         pattern:
@@ -172,8 +165,7 @@ spec:
 
     # Rule 7: Require pod probes
     - name: require-pod-probes
-      <<: *match-pods
-      <<: *exclude-system-namespaces
+      <<: *match-and-exclude
       validate:
         message: "Containers must have at least one probe (liveness, readiness, or startup)"
         anyPattern:
@@ -189,8 +181,7 @@ spec:
 
     # Rule 8: Require memory requests and limits
     - name: require-memory-resources
-      <<: *match-pods
-      <<: *exclude-system-namespaces
+      <<: *match-and-exclude
       validate:
         message: "Memory requests and limits are required for all containers"
         pattern:
