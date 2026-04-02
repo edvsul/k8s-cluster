@@ -20,7 +20,6 @@ x-exclude-system-namespaces: &exclude-system-namespaces
             - flux-system
             - renovate
 
----
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
