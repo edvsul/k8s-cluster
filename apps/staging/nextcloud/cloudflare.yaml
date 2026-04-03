@@ -58,6 +58,12 @@ spec:
           - name: cloudflared-cm
             mountPath: /etc/cloudflared/config
             readOnly: true
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: 1m
+            limits:
+              memory: 20Mi
       volumes:
       - name: tunnel-creds
         secret:
