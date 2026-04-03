@@ -12,7 +12,7 @@ metadata:
       Implements the complete Pod Security Standards restricted profile plus additional
       best practices including required probes and resource limits.
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: require-drop-all-capabilities
@@ -33,25 +33,21 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+      preconditions:
+        all:
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
-        message: "All capabilities must be dropped. Set securityContext.capabilities.drop: [ALL]"
-        pattern:
-          spec:
-            =(ephemeralContainers):
-              - =(securityContext):
-                  =(capabilities):
-                    drop:
-                      - ALL
-            =(initContainers):
-              - =(securityContext):
-                  =(capabilities):
-                    drop:
-                      - ALL
-            containers:
-              - =(securityContext):
-                  =(capabilities):
-                    drop:
-                      - ALL
+        message: Containers must drop `ALL` capabilities.
+        foreach:
+          - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+            deny:
+              conditions:
+                all:
+                  - key: ALL
+                    operator: AnyNotIn
+                    value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
 
     - name: disallow-privilege-escalation
       match:
@@ -72,18 +68,13 @@ spec:
                 - flux-system
                 - renovate
       validate:
-        message: "Privilege escalation is disallowed. Set allowPrivilegeEscalation: false"
-        pattern:
-          spec:
-            =(ephemeralContainers):
-              - =(securityContext):
-                  =(allowPrivilegeEscalation): false
-            =(initContainers):
-              - =(securityContext):
-                  =(allowPrivilegeEscalation): false
-            containers:
-              - =(securityContext):
-                  =(allowPrivilegeEscalation): false
+        cel:
+          variables:
+            - name: allContainers
+              expression: object.spec.containers +  object.spec.?initContainers.orValue([]) +  object.spec.?ephemeralContainers.orValue([])
+          expressions:
+            - expression: variables.allContainers.all(container,  container.?securityContext.allowPrivilegeEscalation.orValue(true) == false)
+              message: Privilege escalation is disallowed.  All containers must set the securityContext.allowPrivilegeEscalation field to `false`.
 
     - name: require-run-as-nonroot
       match:
