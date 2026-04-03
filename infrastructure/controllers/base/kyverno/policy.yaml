@@ -15,7 +15,6 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-    # Rule 1: Require dropping ALL capabilities
     - name: require-drop-all-capabilities
       match:
         any:
@@ -54,7 +53,6 @@ spec:
                     drop:
                       - ALL
 
-    # Rule 2: Disallow privilege escalation
     - name: disallow-privilege-escalation
       match:
         any:
@@ -87,7 +85,6 @@ spec:
               - =(securityContext):
                   =(allowPrivilegeEscalation): false
 
-    # Rule 3: Require runAsNonRoot
     - name: require-run-as-nonroot
       match:
         any:
@@ -132,7 +129,6 @@ spec:
                 - securityContext:
                     runAsNonRoot: true
 
-    # Rule 4: Require runAsUser > 0
     - name: require-run-as-non-root-user
       match:
         any:
@@ -167,7 +163,6 @@ spec:
               - =(securityContext):
                   =(runAsUser): ">0"
 
-    # Rule 5: Restrict seccomp (strict)
     - name: restrict-seccomp-strict
       match:
         any:
@@ -206,7 +201,6 @@ spec:
                   =(seccompProfile):
                     type: "RuntimeDefault | Localhost"
 
-    # Rule 6: Restrict volume types
     - name: restrict-volume-types
       match:
         any:
@@ -239,47 +233,6 @@ spec:
               - =(projected): "?*"
               - =(secret): "?*"
 
-    # Rule 7: Require pod probes
-    - name: require-pod-probes
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
-      preconditions:
-        all:
-          - key: "{{request.operation || 'BACKGROUND'}}"
-            operator: AnyIn
-            value:
-              - CREATE
-              - UPDATE
-      validate:
-        message: Liveness, readiness probes are required for all containers.
-        foreach:
-          - list: request.object.spec.containers[]
-            deny:
-              conditions:
-                all:
-                  - key: livenessProbe
-                    operator: AllNotIn
-                    value: "{{ element.keys(@)[] }}"
-                  - key: readinessProbe
-                    operator: AllNotIn
-                    value: "{{ element.keys(@)[] }}"
-
-    # Rule 8: Require memory requests and limits
     - name: require-memory-resources
       match:
         any:
