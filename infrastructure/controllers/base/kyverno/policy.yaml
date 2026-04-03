@@ -258,18 +258,26 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+      preconditions:
+        all:
+          - key: "{{request.operation || 'BACKGROUND'}}"
+            operator: AnyIn
+            value:
+              - CREATE
+              - UPDATE
       validate:
-        message: "Containers must have at least one probe (liveness, readiness, or startup)"
-        anyPattern:
-          - spec:
-              containers:
-                - livenessProbe: "?*"
-          - spec:
-              containers:
-                - readinessProbe: "?*"
-          - spec:
-              containers:
-                - startupProbe: "?*"
+        message: Liveness, readiness probes are required for all containers.
+        foreach:
+          - list: request.object.spec.containers[]
+            deny:
+              conditions:
+                all:
+                  - key: livenessProbe
+                    operator: AllNotIn
+                    value: "{{ element.keys(@)[] }}"
+                  - key: readinessProbe
+                    operator: AllNotIn
+                    value: "{{ element.keys(@)[] }}"
 
     # Rule 8: Require memory requests and limits
     - name: require-memory-resources
