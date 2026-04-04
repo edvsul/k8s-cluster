@@ -9,8 +9,5 @@
     "fileMatch": [
       "\\.yaml$"
     ]
-  },
-  "major": {
-    "enabled": true
   }
 }
