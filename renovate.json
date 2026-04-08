@@ -15,5 +15,16 @@
   },
   "major": {
     "enabled": true
-  }
+  },
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "\\.yaml$"
+      ],
+      "matchStrings": [
+        "kind: HelmRelease[\\s\\S]*?chart:\\s+(?<depName>[^\\s]+)\\s+version:\\s+[\"']?(?<currentValue>[^\\s\"']+)"
+      ],
+      "datasourceTemplate": "helm"
+    }
+  ]
 }
