@@ -1,16 +1,19 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "kubernetes": {
-    "fileMatch": [
-      "\\.yaml$"
-    ]
-  },
-  "flux": {
-    "fileMatch": [
-      "\\.yaml$"
-    ]
-  },
-  "major": {
-    "enabled": true
-  }
+  "extends": [
+    "config:recommended"
+  ]
+  // "kubernetes": {
+  //   "fileMatch": [
+  //     "\\.yaml$"
+  //   ]
+  // },
+  // "flux": {
+  //   "fileMatch": [
+  //     "\\.yaml$"
+  //   ]
+  // },
+  // "major": {
+  //   "enabled": true
+  // }
 }
