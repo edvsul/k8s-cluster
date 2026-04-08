@@ -12,7 +12,7 @@ spec:
         spec:
           containers:
           - name: renovate
-            image: renovate/renovate:43
+            image: renovate/renovate:43-full
             securityContext:
               allowPrivilegeEscalation: false
               runAsNonRoot: true
