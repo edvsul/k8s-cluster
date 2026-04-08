@@ -1,8 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
   "kubernetes": {
     "fileMatch": [
       "\\.yaml$"
@@ -15,16 +12,5 @@
   },
   "major": {
     "enabled": true
-  },
-  "regexManagers": [
-    {
-      "fileMatch": [
-        "\\.yaml$"
-      ],
-      "matchStrings": [
-        "kind: HelmRelease[\\s\\S]*?chart:\\s+(?<depName>[^\\s]+)\\s+version:\\s+[\"']?(?<currentValue>[^\\s\"']+)"
-      ],
-      "datasourceTemplate": "helm"
-    }
-  ]
+  }
 }
