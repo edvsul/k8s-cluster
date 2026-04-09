@@ -1,0 +1,44 @@
+---
+- name: Disable multipath on server nodes
+  hosts: server
+  become: yes
+  tasks:
+    - name: Stop multipathd service
+      ansible.builtin.systemd:
+        name: multipathd
+        state: stopped
+      ignore_errors: yes
+
+    - name: Disable multipathd service
+      ansible.builtin.systemd:
+        name: multipathd
+        enabled: no
+      ignore_errors: yes
+
+    - name: Mask multipathd service
+      ansible.builtin.systemd:
+        name: multipathd
+        masked: yes
+      ignore_errors: yes
+
+- name: Disable multipath on agent nodes
+  hosts: agent
+  become: yes
+  tasks:
+    - name: Stop multipathd service
+      ansible.builtin.systemd:
+        name: multipathd
+        state: stopped
+      ignore_errors: yes
+
+    - name: Disable multipathd service
+      ansible.builtin.systemd:
+        name: multipathd
+        enabled: no
+      ignore_errors: yes
+
+    - name: Mask multipathd service
+      ansible.builtin.systemd:
+        name: multipathd
+        masked: yes
+      ignore_errors: yes
