@@ -67,6 +67,11 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+      preconditions:
+        all:
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
         cel:
           variables:
@@ -94,6 +99,11 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+      preconditions:
+        all:
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
         message: "Running as root is not allowed. Set runAsNonRoot: true"
         anyPattern:
@@ -138,6 +148,11 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+      preconditions:
+        all:
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
         message: "Running as root user (UID 0) is not allowed. Set runAsUser > 0"
         pattern:
@@ -172,6 +187,11 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+      preconditions:
+        all:
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
         message: "Seccomp profile must be RuntimeDefault or Localhost"
         pattern:
@@ -252,6 +272,11 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+      preconditions:
+        all:
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
         message: "Memory requests and limits are required for all containers"
         pattern:
