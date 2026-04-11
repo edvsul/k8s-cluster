@@ -63,7 +63,7 @@ spec:
               memory: 16Mi
               cpu: 5m
             limits:
-              memory: 20Mi
+              memory: 30Mi
       volumes:
       - name: tunnel-creds
         secret:
