@@ -14,3 +14,7 @@ spec:
         name: longhorn
         namespace: longhorn-system
       interval: 12h
+  values:
+    defaultBackupStore:
+      backupTarget: "s3://k8s-cluster-longhorn-backups@eu-west-1/"
+      backupTargetCredentialSecret: "longhorn-backup-s3"
