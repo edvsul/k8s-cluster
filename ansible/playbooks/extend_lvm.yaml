@@ -7,7 +7,7 @@
       community.general.lvol:
         vg: ubuntu-vg
         lv: ubuntu-lv
-        size: 75G
+        size: 85G
         resizefs: yes
 
 - name: Extend LVM Logical Volume
