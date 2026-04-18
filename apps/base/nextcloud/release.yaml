@@ -79,8 +79,6 @@ spec:
           enabled: true
           storageClass: longhorn-k8s-cluster
           size: 8Gi
-          annotations:
-            recurring-job-group.longhorn.io/daily-backup: enabled
       auth:
         existingSecret: db-creds # credentials for the mariadb container
     externalDatabase:

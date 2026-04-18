@@ -2,6 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: n8n-pvc
+  annotations:
+    recurring-job-group.longhorn.io/daily-backup: enabled
 spec:
   accessModes:
     - ReadWriteOnce

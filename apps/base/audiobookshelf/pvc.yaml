@@ -2,6 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: audiobookshelf-audiobooks-pvc
+  annotations:
+    recurring-job-group.longhorn.io/daily-backup: enabled
 spec:
   accessModes:
   - ReadWriteOnce
@@ -13,6 +15,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: audiobookshelf-podcasts-pvc
+  annotations:
+    recurring-job-group.longhorn.io/daily-backup: enabled
 spec:
   accessModes:
   - ReadWriteOnce
@@ -24,6 +28,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: audiobookshelf-config-pvc
+  annotations:
+    recurring-job-group.longhorn.io/daily-backup: enabled
 spec:
   accessModes:
   - ReadWriteOnce
@@ -35,6 +41,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: audiobookshelf-metadata-pvc
+  annotations:
+    recurring-job-group.longhorn.io/daily-backup: enabled
 spec:
   accessModes:
   - ReadWriteOnce
