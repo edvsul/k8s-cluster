@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: linkding-data-pvc
   annotations:
-    recurring-job-group.longhorn.io/daily-backup: enabled
+    recurring-job-group.longhorn.io/default: enabled
 spec:
   accessModes:
   - ReadWriteOnce
