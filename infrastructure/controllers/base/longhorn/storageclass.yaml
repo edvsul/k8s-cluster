@@ -12,3 +12,10 @@ parameters:
   staleReplicaTimeout: "30"
   dataLocality: "best-effort"
   replicaAutoBalance: "best-effort"
+  fromBackup: ""
+  recurringJobSelector: '[
+    {
+      "name":"daily-backup",
+      "isGroup":true
+    }
+  ]'
