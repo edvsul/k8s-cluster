@@ -4,8 +4,7 @@ metadata:
   name: default
   namespace: longhorn-system
 spec:
-  #cron: "0 3 * * *" # daily at 03:00 UTC
-  cron: "*/1 * * * *" # every minute for testing
+  cron: "0 3 * * *" # daily at 03:00 UTC
   task: backup
   retain: 2          # keep last 2 daily backups
   concurrency: 1

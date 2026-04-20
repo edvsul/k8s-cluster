@@ -61,8 +61,6 @@ spec:
       enabled: true
       storageClass: longhorn-k8s-cluster
       size: 40Gi
-      # annotations:
-      #   recurring-job-group.longhorn.io/default: enabled
     resources:
       requests:
         memory: 2Gi
