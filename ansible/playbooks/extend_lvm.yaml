@@ -18,5 +18,5 @@
       community.general.lvol:
         vg: ubuntu-vg
         lv: ubuntu-lv
-        size: 95G
+        size: 100G
         resizefs: yes
