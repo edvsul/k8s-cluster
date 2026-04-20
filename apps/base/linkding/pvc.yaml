@@ -2,8 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: linkding-data-pvc
-  annotations:
-    recurring-job-group.longhorn.io/default: enabled
+  # annotations:
+  #   recurring-job-group.longhorn.io/default: enabled
 spec:
   accessModes:
   - ReadWriteOnce
