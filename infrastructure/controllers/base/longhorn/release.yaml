@@ -18,3 +18,5 @@ spec:
     defaultBackupStore:
       backupTarget: "s3://k8s-cluster-longhorn-backups@eu-west-1/"
       backupTargetCredentialSecret: "longhorn-backup-s3"
+    defaultSettings:
+      defaultReplicaCount: "2"
