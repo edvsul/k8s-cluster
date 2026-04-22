@@ -1,0 +1,49 @@
+---
+- name: Configure kubelet image garbage collection thresholds
+  hosts: all
+  become: yes
+
+  vars:
+    image_gc_high_threshold: 70  # start GC when disk usage hits 70%
+    image_gc_low_threshold: 50   # GC until disk usage drops to 50%
+
+  tasks:
+    - name: Ensure /etc/rancher/k3s directory exists
+      ansible.builtin.file:
+        path: /etc/rancher/k3s
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Configure k3s kubelet image GC thresholds
+      ansible.builtin.blockinfile:
+        path: /etc/rancher/k3s/config.yaml
+        create: yes
+        marker: "# {mark} ANSIBLE MANAGED - image-gc"
+        block: |
+          kubelet-arg:
+            - "image-gc-high-threshold={{ image_gc_high_threshold }}"
+            - "image-gc-low-threshold={{ image_gc_low_threshold }}"
+
+    - name: Restart k3s on server node
+      ansible.builtin.systemd:
+        name: k3s
+        state: restarted
+      when: inventory_hostname in groups['server']
+
+    - name: Restart k3s-agent on agent nodes
+      ansible.builtin.systemd:
+        name: k3s-agent
+        state: restarted
+      when: inventory_hostname in groups['agent']
+
+    - name: Wait for node to be ready
+      ansible.builtin.command:
+        cmd: k3s kubectl get node {{ ansible_hostname }} --no-headers
+      register: node_status
+      until: "'Ready' in node_status.stdout"
+      retries: 20
+      delay: 10
+      when: inventory_hostname in groups['server']
+      changed_when: false
