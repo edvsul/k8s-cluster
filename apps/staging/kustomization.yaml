@@ -4,4 +4,4 @@ resources:
   #- audiobookshelf
   - linkding
   #- n8n
-  #- nextcloud
+  - nextcloud
