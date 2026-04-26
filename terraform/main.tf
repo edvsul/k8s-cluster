@@ -1,10 +1,9 @@
 module "longhorn_backup" {
   source = "./modules/longhorn-backup"
 
-  cluster_name   = var.cluster_name
-  environment    = var.environment
-  region         = var.region
-  retention_days = var.longhorn_backup_retention_days
+  cluster_name = var.cluster_name
+  environment  = var.environment
+  region       = var.region
 }
 
 resource "kubernetes_secret" "longhorn_backup_credentials" {

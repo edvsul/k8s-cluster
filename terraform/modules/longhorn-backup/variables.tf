@@ -24,7 +24,7 @@ variable "region" {
 variable "retention_days" {
   description = "Number of days to retain Longhorn backup objects before expiry (0 = no expiry)"
   type        = number
-  default     = 90
+  default     = 7
 }
 
 variable "tags" {

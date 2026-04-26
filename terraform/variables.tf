@@ -22,12 +22,6 @@ variable "environment" {
   default     = "staging"
 }
 
-variable "longhorn_backup_retention_days" {
-  description = "Days to retain Longhorn backup objects (0 = no expiry)"
-  type        = number
-  default     = 90
-}
-
 variable "kubeconfig_path" {
   description = "Path to the kubeconfig file used to connect to the cluster"
   type        = string
