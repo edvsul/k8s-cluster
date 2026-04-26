@@ -59,7 +59,7 @@ spec:
             );
       extraEnv:
       - name: PHP_MEMORY_LIMIT
-        value: "1024M"
+        value: "3072M"
     persistence:
       enabled: true
       storageClass: longhorn-k8s-cluster
