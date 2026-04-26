@@ -63,7 +63,7 @@ spec:
             name: nextcloud-apache-mpm
       extraVolumeMounts:
         - name: apache-mpm-config
-          mountPath: /etc/apache2/conf-enabled/mpm.conf
+          mountPath: /etc/apache2/mods-enabled/mpm_prefork.conf
           subPath: mpm.conf
     persistence:
       enabled: true
