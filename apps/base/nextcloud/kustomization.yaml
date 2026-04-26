@@ -5,3 +5,4 @@ resources:
   - repository.yaml
   - release.yaml
   - secrets.yaml
+  - apache-mpm-configmap.yaml
