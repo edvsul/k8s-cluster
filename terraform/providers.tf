@@ -11,6 +11,13 @@ terraform {
       version = "~> 3.0"
     }
   }
+  backend "s3" {
+    bucket       = "edvinas-tfstate-backup"
+    key          = "homelab/staging/tfstate"
+    region       = "eu-west-1"
+    use_lockfile = true
+    profile      = "tgtg-playground-edvinas"
+  }
 }
 
 provider "aws" {
