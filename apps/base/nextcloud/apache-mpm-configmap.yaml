@@ -8,6 +8,6 @@ data:
     StartServers          2
     MinSpareServers       2
     MaxSpareServers       4
-    MaxRequestWorkers     5
-    ServerLimit           5
+    MaxRequestWorkers     10
+    ServerLimit           10
     MaxConnectionsPerChild 500
