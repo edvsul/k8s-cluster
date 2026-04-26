@@ -83,3 +83,6 @@ spec:
       existingSecret:
         enabled: true
         secretName: nextcloud-db-creds # credentials for the nextcloud application to connect to the mariadb database
+    extraEnv:
+      - name: PHP_MEMORY_LIMIT
+        value: "1024M"
