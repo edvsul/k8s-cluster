@@ -63,7 +63,7 @@ spec:
         # https://github.com/nextcloud/docker/issues/763#issuecomment-2752172569
         # create empty redis file for nextcloud entrypoint to override it
         - name: init-redis-session-ini
-          image: busybox
+          image: busybox:1.36.1
           command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
           volumeMounts:
             - name: nextcloud-redis-session-ini
