@@ -59,11 +59,24 @@ spec:
               'preview_max_x' => 2048,
               'preview_max_y' => 2048,
             );
+      extraInitContainers:
+        # create empty redis file for nextcloud entrypoint to override it
+        - name: init-redis-session-ini
+          image: busybox
+          command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
+          volumeMounts:
+            - name: nextcloud-redis-session-ini
+              mountPath: "/usr/local/etc/php/conf.d"
       extraVolumes:
+        - name: nextcloud-redis-session-ini
+          emptyDir: {}
         - name: apache-mpm-config
           configMap:
             name: nextcloud-apache-mpm
       extraVolumeMounts:
+        - name: nextcloud-redis-session-ini
+          mountPath: "/usr/local/etc/php/conf.d/redis-session.ini" # fix permission denied error
+          subPath: redis-session.ini
         - name: apache-mpm-config
           mountPath: /etc/apache2/mods-enabled/mpm_prefork.conf
           subPath: mpm.conf
@@ -87,7 +100,7 @@ spec:
     internalDatabase:
       enabled: false # turn off SQLite
     redis:
-      enabled: false
+      enabled: true
       auth:
         enabled: false
     mariadb:
