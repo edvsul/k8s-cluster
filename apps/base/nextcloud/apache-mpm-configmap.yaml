@@ -1,3 +1,7 @@
+# Caps Apache prefork worker count to fit within the Nextcloud pod's memory limit (3Gi).
+# Without this, Apache defaults to MaxRequestWorkers=150, which under load would spawn
+# enough Nextcloud+PHP workers (~100-300Mi each) to OOMKill the pod almost immediately.
+# Mounted over /etc/apache2/mods-enabled/mpm_prefork.conf via extraVolumeMounts in the HelmRelease.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,4 +14,5 @@ data:
     MaxSpareServers       4
     MaxRequestWorkers     10
     ServerLimit           10
+    # Recycle workers after 500 requests to flush PHP memory leaks before they accumulate.
     MaxConnectionsPerChild 500
