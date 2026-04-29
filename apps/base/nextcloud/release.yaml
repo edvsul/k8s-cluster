@@ -56,7 +56,7 @@ spec:
             $CONFIG = array(
               'check_data_directory_permissions' => false, # https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/
               'maintenance_window_start' => 1, # Start maintenance window at 1 UTC time
-              'preview_max_x' => 2048,
+              'preview_max_x' => 2048, # Change photos size limit to 2048x2048 to prevent OOMKills when generating previews for large photos
               'preview_max_y' => 2048,
             );
       extraInitContainers:
@@ -100,12 +100,6 @@ spec:
       enabled: true
       storageClass: longhorn-k8s-cluster
       size: 40Gi
-    livenessProbe:
-      timeoutSeconds: 10
-      failureThreshold: 10
-    readinessProbe:
-      timeoutSeconds: 10
-      failureThreshold: 10
     resources:
       requests:
         memory: 2Gi
