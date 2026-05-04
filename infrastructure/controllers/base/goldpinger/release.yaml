@@ -22,3 +22,7 @@ spec:
       requests:
         cpu: 100m
         memory: 128Mi
+    extraEnv:
+      - name: HOSTS_TO_RESOLVE
+        value: "www.bloomberg.com one.two.three"
+      
