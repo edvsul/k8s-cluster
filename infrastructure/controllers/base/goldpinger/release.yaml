@@ -15,6 +15,10 @@ spec:
         namespace: goldpinger
       interval: 12h
   values:
+    golpinger:
+      udp:
+        enabled: true
+        port: 6969
     resources:
       limits:
         cpu: 100m
