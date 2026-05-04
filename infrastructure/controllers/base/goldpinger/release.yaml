@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: goldpinger
+  namespace: goldpinger
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: goldpinger
+      sourceRef:
+        kind: HelmRepository
+        name: goldpinger
+        namespace: goldpinger
+      interval: 12h
