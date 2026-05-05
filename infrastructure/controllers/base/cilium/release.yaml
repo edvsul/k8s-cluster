@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: cilium
-  namespace: cilium
+  namespace: kube-system
 spec:
   interval: 30m
   chart:
@@ -15,9 +15,27 @@ spec:
         namespace: cilium
       interval: 12h
   values:
+    # Below are migration values for cilium 1.19.3
+    bpf:
+      hostLegacyRouting: true
+    cluster:
+      name: default
+    cni:
+      customConf: true
+      uninstall: false
     ipam:
-      mode: "cluster-pool"
+      mode: cluster-pool
       operator:
         clusterPoolIPv4PodCIDRList:
-          - "10.245.0.0/16"
-        clusterPoolIPv4MaskSize: 24
+        - 10.245.0.0/16
+    k8sServiceHost: 10.0.0.78
+    k8sServicePort: 6443
+    kubeProxyReplacement: true
+    operator:
+      replicas: 1
+      unmanagedPodWatcher:
+        restart: false
+    policyEnforcementMode: never
+    routingMode: tunnel
+    tunnelPort: 8473
+    tunnelProtocol: vxlan
