@@ -4,6 +4,7 @@ metadata:
   name: cilium
   namespace: kube-system
 spec:
+  suspend: true
   interval: 30m
   chart:
     spec:
