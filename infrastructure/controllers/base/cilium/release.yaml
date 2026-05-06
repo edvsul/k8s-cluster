@@ -4,7 +4,6 @@ metadata:
   name: cilium
   namespace: kube-system
 spec:
-  suspend: true
   interval: 30m
   chart:
     spec:
@@ -29,9 +28,6 @@ spec:
       operator:
         clusterPoolIPv4PodCIDRList:
         - 10.245.0.0/16
-    k8sServiceHost: 10.0.0.78
-    k8sServicePort: 6443
-    kubeProxyReplacement: true
     operator:
       replicas: 1
       unmanagedPodWatcher:
