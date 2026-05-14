@@ -15,24 +15,11 @@ spec:
         namespace: kube-system
       interval: 12h
   values:
-    # Below are migration values for cilium 1.19.3
-    bpf:
-      hostLegacyRouting: true
-    cluster:
-      name: default
-    cni:
-      customConf: true
-      uninstall: false
     ipam:
-      mode: cluster-pool
       operator:
         clusterPoolIPv4PodCIDRList:
         - 10.245.0.0/16
     operator:
       replicas: 1
-      unmanagedPodWatcher:
-        restart: false
-    policyEnforcementMode: never
-    routingMode: tunnel
     tunnelPort: 8473
     tunnelProtocol: vxlan
