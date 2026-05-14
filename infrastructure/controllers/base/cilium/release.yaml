@@ -23,8 +23,6 @@ spec:
     cni:
       customConf: true
       uninstall: false
-      confPath: /var/lib/rancher/k3s/agent/etc/cni/net.d
-      binPath:  /var/lib/rancher/k3s/data/cni
     ipam:
       mode: cluster-pool
       operator:
