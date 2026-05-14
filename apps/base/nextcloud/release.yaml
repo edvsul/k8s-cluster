@@ -109,10 +109,10 @@ spec:
       enabled: true
     internalDatabase:
       enabled: false # turn off SQLite
-    redis:
-      enabled: true
-      auth:
-        enabled: false
+    # redis:
+    #   enabled: true
+    #   auth:
+    #     enabled: false
     mariadb:
       enabled: true
       primary:
