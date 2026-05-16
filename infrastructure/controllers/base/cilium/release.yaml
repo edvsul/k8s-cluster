@@ -15,8 +15,6 @@ spec:
         namespace: kube-system
       interval: 12h
   values:
-    bpf:
-      hostLegacyRouting: true
     ipam:
       operator:
         clusterPoolIPv4PodCIDRList:
