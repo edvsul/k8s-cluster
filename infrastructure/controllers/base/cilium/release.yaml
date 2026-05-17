@@ -17,6 +17,8 @@ spec:
   values:
     bpf:
       hostLegacyRouting: false
+    endpointRoutes:
+      enabled: true
     ipam:
       operator:
         clusterPoolIPv4PodCIDRList:
