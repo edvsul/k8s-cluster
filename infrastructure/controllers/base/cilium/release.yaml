@@ -14,21 +14,3 @@ spec:
         name: cilium
         namespace: kube-system
       interval: 12h
-  values:
-    bpf:
-      hostLegacyRouting: false
-    endpointRoutes:
-      enabled: true
-    ipam:
-      operator:
-        clusterPoolIPv4PodCIDRList:
-        - 10.245.0.0/16
-    operator:
-      replicas: 1
-      unmanagedPodWatcher:
-        restart: true
-    cni:
-      customConf: false
-    policyEnforcementMode: "default"
-    tunnelPort: 8473
-    tunnelProtocol: vxlan
