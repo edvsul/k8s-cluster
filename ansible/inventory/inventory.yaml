@@ -14,4 +14,4 @@ k3s_cluster:
     ansible_user: admin
     k3s_version: v1.34.1+k3s1
     api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
-    extra_server_args: "--flannel-backend=none --disable-network-policy"
+    extra_server_args: "--flannel-backend=none --disable-network-policy --disable-kube-proxy --disable=traefik --cluster-cidr=10.42.0.0/16 --service-cidr=10.43.0.0/16"
