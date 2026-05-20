@@ -31,7 +31,7 @@ spec:
         existingSecret: admin-creds
       ingress:
         enabled: true
-        ingressClassName: traefik
+        ingressClassName: cilium
         hosts:
         - grafana.edvsul.org
         tls:

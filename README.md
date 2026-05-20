@@ -34,7 +34,7 @@ The kubernetes homelab
 1. **Install k3s with k3s-ansible**
 2. **Install cilium**
 
-   ```helm install cilium cilium/cilium --version 1.19.3 \
+   ```helm install cilium cilium/cilium --version 1.19.4 \
       --namespace kube-system \
       --set operator.replicas=1 \
       --set ipam.operator.clusterPoolIPv4PodCIDRList="10.42.0.0/16" \
@@ -42,6 +42,7 @@ The kubernetes homelab
       --set k8sServicePort=6443 \
       --set kubeProxyReplacement=true \
       --set socketLB.enabled=true
+      --set ingressController.enabled=true
    ```
 
 ### Bootstrap FluxCD
