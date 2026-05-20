@@ -10,3 +10,4 @@ spec:
   concurrency: 1
   groups:
     - default
+  retain: 7
