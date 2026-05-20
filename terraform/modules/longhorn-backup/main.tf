@@ -49,32 +49,6 @@ resource "aws_s3_bucket_public_access_block" "longhorn" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "longhorn" {
-  count  = var.retention_days > 0 ? 1 : 0
-  bucket = aws_s3_bucket.longhorn.id
-
-  rule {
-    id     = "expire-old-backups"
-    status = "Enabled"
-
-    filter {}
-
-    expiration {
-      days = var.retention_days
-    }
-
-    # Clean up incomplete multipart uploads
-    abort_incomplete_multipart_upload {
-      days_after_initiation = 7
-    }
-
-    # Expire old noncurrent versions
-    noncurrent_version_expiration {
-      noncurrent_days = var.retention_days
-    }
-  }
-}
-
 # ---------------------------------------------------------------------------
 # IAM policy
 # ---------------------------------------------------------------------------
