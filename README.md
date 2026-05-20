@@ -41,8 +41,8 @@ The kubernetes homelab
       --set k8sServiceHost="10.0.0.78" \
       --set k8sServicePort=6443 \
       --set kubeProxyReplacement=true \
-      --set socketLB.enabled=true
-      --set ingressController.enabled=true
+      --set ingressController.enabled=true \
+      --set ingressController.default=true
    ```
 
 ### Bootstrap FluxCD
