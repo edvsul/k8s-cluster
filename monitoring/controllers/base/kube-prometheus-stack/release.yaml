@@ -34,6 +34,7 @@ spec:
         ingressClassName: cilium
         hosts:
         - grafana.edvsul.org
+        pathType: Prefix
         tls:
         - secretName: grafana-tls-certificate
           hosts:
