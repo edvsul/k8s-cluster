@@ -39,7 +39,9 @@ The kubernetes homelab
       --set operator.replicas=1 \
       --set ipam.operator.clusterPoolIPv4PodCIDRList="10.42.0.0/16" \
       --set k8sServiceHost="10.0.0.78" \
-      --set k8sServicePort=6443
+      --set k8sServicePort=6443 \
+      --set kubeProxyReplacement=true \
+      --set socketLB.enabled=true
    ```
 
 ### Bootstrap FluxCD
