@@ -1,0 +1,128 @@
+---
+- name: Install Cilium CNI and configure LoadBalancer
+  hosts: server
+  become: yes
+
+  vars:
+    cilium_version: "1.19.4"
+    cilium_namespace: kube-system
+    k8s_service_host: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
+    k8s_service_port: 6443
+    cluster_cidr: "10.42.0.0/16"
+    lb_ip_pool_start: "10.0.0.240"
+    lb_ip_pool_stop: "10.0.0.250"
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+
+  tasks:
+    - name: Check if helm is installed
+      ansible.builtin.command: which helm
+      register: helm_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install helm
+      ansible.builtin.shell: |
+        set -o pipefail
+        curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      args:
+        executable: /bin/bash
+      when: helm_check.rc != 0
+
+    - name: Add Cilium helm repo
+      ansible.builtin.command:
+        cmd: helm repo add cilium https://helm.cilium.io/
+      register: repo_add
+      changed_when: "'has been added' in repo_add.stdout"
+      failed_when: repo_add.rc != 0 and 'already exists' not in repo_add.stderr
+
+    - name: Update Cilium helm repo
+      ansible.builtin.command:
+        cmd: helm repo update cilium
+      changed_when: false
+
+    - name: Write Cilium values file
+      ansible.builtin.copy:
+        dest: /etc/rancher/k3s/cilium-values.yaml
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          operator:
+            replicas: 1
+            rollOutPods: true
+          rollOutCiliumPods: true
+          k8sServiceHost: "{{ k8s_service_host }}"
+          k8sServicePort: {{ k8s_service_port }}
+          kubeProxyReplacement: true
+          socketLB:
+            enabled: true
+            hostNamespaceOnly: true
+          ingressController:
+            enabled: true
+            loadbalancerMode: shared
+            service:
+              annotations:
+                io.cilium/lb-ipam-ips: "{{ lb_ip_pool_start }}"
+          l2announcements:
+            enabled: true
+          externalIPs:
+            enabled: true
+
+    - name: Install or upgrade Cilium
+      environment:
+        KUBECONFIG: "{{ kubeconfig }}"
+      ansible.builtin.command:
+        cmd: >
+          helm upgrade cilium cilium/cilium --install
+          --version {{ cilium_version }}
+          --namespace {{ cilium_namespace }}
+          --values /etc/rancher/k3s/cilium-values.yaml
+          --wait
+          --timeout 5m
+      register: helm_result
+      changed_when: "'has been upgraded' in helm_result.stdout or 'has been installed' in helm_result.stdout"
+
+    - name: Wait for cilium-operator rollout
+      environment:
+        KUBECONFIG: "{{ kubeconfig }}"
+      ansible.builtin.command:
+        cmd: kubectl -n {{ cilium_namespace }} rollout status deploy/cilium-operator --timeout=180s
+      changed_when: false
+
+    - name: Apply CiliumLoadBalancerIPPool
+      environment:
+        KUBECONFIG: "{{ kubeconfig }}"
+      ansible.builtin.shell:
+        cmd: |
+          cat <<'EOF' | kubectl apply -f -
+          apiVersion: cilium.io/v2alpha1
+          kind: CiliumLoadBalancerIPPool
+          metadata:
+            name: lan-pool
+          spec:
+            blocks:
+              - start: "{{ lb_ip_pool_start }}"
+                stop: "{{ lb_ip_pool_stop }}"
+          EOF
+      register: pool_apply
+      changed_when: "'configured' in pool_apply.stdout or 'created' in pool_apply.stdout"
+
+    - name: Apply CiliumL2AnnouncementPolicy
+      environment:
+        KUBECONFIG: "{{ kubeconfig }}"
+      ansible.builtin.shell:
+        cmd: |
+          cat <<'EOF' | kubectl apply -f -
+          apiVersion: cilium.io/v2alpha1
+          kind: CiliumL2AnnouncementPolicy
+          metadata:
+            name: lan-l2
+          spec:
+            externalIPs: true
+            loadBalancerIPs: true
+            nodeSelector:
+              matchLabels:
+                kubernetes.io/os: linux
+          EOF
+      register: policy_apply
+      changed_when: "'configured' in policy_apply.stdout or 'created' in policy_apply.stdout"
