@@ -56,7 +56,6 @@
           kubeProxyReplacement: true
           socketLB:
             enabled: true
-            hostNamespaceOnly: true
           ingressController:
             enabled: true
             loadbalancerMode: shared
