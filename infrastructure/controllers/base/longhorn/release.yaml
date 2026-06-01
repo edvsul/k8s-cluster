@@ -21,3 +21,4 @@ spec:
     defaultSettings:
       concurrentAutomaticEngineUpgradePerNodeLimit: 1
       defaultReplicaCount: "2"
+      storageOverProvisioningPercentage: "500"
