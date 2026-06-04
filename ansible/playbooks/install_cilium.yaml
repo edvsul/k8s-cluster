@@ -56,6 +56,10 @@
               enabled: true
             ui:
               enabled: true
+              ingress:
+                enabled: true
+                hosts: 
+                  - hubble.edvsul.org
             metrics:
               enabled:
                 - dns
@@ -71,6 +75,7 @@
             enabled: true
           ingressController:
             enabled: true
+            default: true
             loadbalancerMode: shared
             service:
               annotations:
