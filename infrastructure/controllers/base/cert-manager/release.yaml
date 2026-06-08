@@ -18,3 +18,7 @@ spec:
     crds: Create
   upgrade:
     crds: CreateReplace
+  values:
+    resources:
+      cpu: 10m
+      memory: 32Mi
