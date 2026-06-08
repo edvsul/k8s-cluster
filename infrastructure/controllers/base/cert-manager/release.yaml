@@ -14,11 +14,9 @@ spec:
         name: jetstack
         namespace: cert-manager
       interval: 12h
-  install:
-    crds: Create
-  upgrade:
-    crds: CreateReplace
   values:
+    crds:
+      enabled: true
     resources:
       requests:
         cpu: 10m
