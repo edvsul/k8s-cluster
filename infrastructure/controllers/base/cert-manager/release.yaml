@@ -7,10 +7,14 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: jetstack/cert-manager
-      version: "1.1.2"
+      chart: cert-manager
+      version: "1.20.2"
       sourceRef:
         kind: HelmRepository
         name: jetstack
         namespace: cert-manager
       interval: 12h
+  install:
+    crds: Create
+  upgrade:
+    crds: CreateReplace
