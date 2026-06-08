@@ -20,14 +20,17 @@ spec:
     crds: CreateReplace
   values:
     resources:
-      cpu: 10m
-      memory: 32Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
     cainjector:
       resources:
-        cpu: 10m
-        memory: 32Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
     webhook:
       resources:
-        cpu: 10m
-        memory: 32Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
     
