@@ -113,6 +113,12 @@ spec:
       enabled: true
       auth:
         enabled: false
+      master:
+        persistence:
+          enabled: false
+      replica:
+        persistence:
+          enabled: false 
     mariadb:
       enabled: true
       primary:
