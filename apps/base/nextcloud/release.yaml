@@ -59,40 +59,40 @@ spec:
               'preview_max_x' => 2048, # Change photos size limit to 2048x2048 to prevent OOMKills when generating previews for large photos
               'preview_max_y' => 2048,
             );
-      # extraInitContainers:
-      #   # https://github.com/nextcloud/docker/issues/763#issuecomment-2752172569
-      #   # create empty redis file for nextcloud entrypoint to override it
-      #   - name: init-redis-session-ini
-      #     image: busybox:1.38.0
-      #     command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
-      #     securityContext:
-      #       allowPrivilegeEscalation: false
-      #       runAsNonRoot: true
-      #       runAsUser: 33
-      #       runAsGroup: 33
-      #       capabilities:
-      #         drop:
-      #           - ALL
-      #       seccompProfile:
-      #         type: RuntimeDefault
-      #     resources:
-      #       requests:
-      #         memory: 8Mi
-      #       limits:
-      #         memory: 16Mi
-          # volumeMounts:
-          #   - name: nextcloud-redis-session-ini
-          #     mountPath: "/usr/local/etc/php/conf.d"
+      extraInitContainers:
+        # https://github.com/nextcloud/docker/issues/763#issuecomment-2752172569
+        # create empty redis file for nextcloud entrypoint to override it
+        - name: init-redis-session-ini
+          image: busybox:1.38.0
+          command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 33
+            runAsGroup: 33
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              memory: 8Mi
+            limits:
+              memory: 16Mi
+          volumeMounts:
+            - name: nextcloud-redis-session-ini
+              mountPath: "/usr/local/etc/php/conf.d"
       extraVolumes:
-      # - name: nextcloud-redis-session-ini
-      #   emptyDir: {}
+      - name: nextcloud-redis-session-ini
+        emptyDir: {}
       - name: apache-mpm-config
         configMap:
           name: nextcloud-apache-mpm
       extraVolumeMounts:
-      # - name: nextcloud-redis-session-ini
-      #   mountPath: "/usr/local/etc/php/conf.d/redis-session.ini" # fix permission denied error
-      #   subPath: redis-session.ini
+      - name: nextcloud-redis-session-ini
+        mountPath: "/usr/local/etc/php/conf.d/redis-session.ini" # fix permission denied error
+        subPath: redis-session.ini
       - name: apache-mpm-config
         mountPath: /etc/apache2/mods-enabled/mpm_prefork.conf
         subPath: mpm.conf
@@ -109,16 +109,16 @@ spec:
       enabled: true
     internalDatabase:
       enabled: false # turn off SQLite
-    # redis:
-    #   enabled: true
-    #   auth:
-    #     enabled: false
-    #   master:
-    #     persistence:
-    #       enabled: false
-    #   replica:
-    #     persistence:
-    #       enabled: false 
+    redis:
+      enabled: true
+      auth:
+        enabled: false
+      master:
+        persistence:
+          enabled: false
+      replica:
+        persistence:
+          enabled: false 
     mariadb:
       enabled: true
       primary:
