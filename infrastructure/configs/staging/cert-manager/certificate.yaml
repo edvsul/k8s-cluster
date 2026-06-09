@@ -7,7 +7,7 @@ spec:
   secretName: edvsul.org
   issuerRef:
     name: letsencrypt-staging
-    kind: Issuer
+    kind: ClusterIssuer
     group: cert-manager.io
   commonName: "*.edvsul.org"
   dnsNames:
