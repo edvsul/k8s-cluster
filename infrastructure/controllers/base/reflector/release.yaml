@@ -15,9 +15,9 @@ spec:
         namespace: reflector
       interval: 12h
   values:
+    securityContext:
+      allowPrivilegeEscalation: false
     resources:
-      securityContext:
-        allowPrivilegeEscalation: false
       requests:
         cpu: 10m
         memory: 32Mi
