@@ -1,0 +1,23 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: reflector
+  namespace: reflector
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: reflector
+      version: "10.0.49"
+      sourceRef:
+        kind: HelmRepository
+        name: emberstack
+        namespace: reflector
+      interval: 12h
+  values:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        memory: 64Mi

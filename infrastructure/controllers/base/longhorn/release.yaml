@@ -17,7 +17,7 @@ spec:
   values:
     ingress:
       enabled: true
-      hosts: "longhorn.edvsul.org"
+      host: "longhorn.edvsul.org"
       tls: true
       tlsSecret: "edvsul.org"
     defaultBackupStore:
