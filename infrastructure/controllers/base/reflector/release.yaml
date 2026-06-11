@@ -16,6 +16,8 @@ spec:
       interval: 12h
   values:
     resources:
+      securityContext:
+        allowPrivilegeEscalation: false
       requests:
         cpu: 10m
         memory: 32Mi
