@@ -15,6 +15,11 @@ spec:
         namespace: longhorn-system
       interval: 12h
   values:
+    ingress:
+      enabled: true
+      hosts: "longhorn.edvsul.org"
+      tls: true
+      tlsSecret: "edvsul.org"
     defaultBackupStore:
       backupTarget: "s3://k8s-cluster-longhorn-backups@eu-west-1/"
       backupTargetCredentialSecret: "longhorn-backup-s3"
