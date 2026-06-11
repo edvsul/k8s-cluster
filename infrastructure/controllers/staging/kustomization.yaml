@@ -6,4 +6,4 @@ resources:
   - longhorn
   - kyverno
   - goldpinger
-  - reflector
+  #- reflector
