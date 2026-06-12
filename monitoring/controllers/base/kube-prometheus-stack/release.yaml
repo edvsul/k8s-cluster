@@ -36,6 +36,6 @@ spec:
         - grafana.edvsul.org
         pathType: Prefix
         tls:
-        - secretName: grafana-tls-certificate
+        - secretName: edvsul.org
           hosts:
           - grafana.edvsul.org
