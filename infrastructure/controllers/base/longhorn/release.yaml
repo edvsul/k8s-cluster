@@ -20,7 +20,6 @@ spec:
       host: "longhorn.edvsul.org"
       tls: true
       tlsSecret: "edvsul.org"
-      secureBackends: true
     defaultBackupStore:
       backupTarget: "s3://k8s-cluster-longhorn-backups@eu-west-1/"
       backupTargetCredentialSecret: "longhorn-backup-s3"
