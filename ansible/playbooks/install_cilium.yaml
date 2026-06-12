@@ -58,8 +58,12 @@
               enabled: true
               ingress:
                 enabled: true
-                hosts: 
+                hosts:
                   - hubble.edvsul.org
+                tls:
+                  - secretName: edvsul.org
+                    hosts:
+                      - hubble.edvsul.org
             metrics:
               enabled:
                 - dns
