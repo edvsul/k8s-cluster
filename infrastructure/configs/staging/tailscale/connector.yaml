@@ -2,6 +2,7 @@ apiVersion: tailscale.com/v1alpha1
 kind: Connector
 metadata:
   name: home-subnet-router
+  namespace: kube-system
 spec:
   hostname: k8s-home-subnet-router
   subnetRouter:
