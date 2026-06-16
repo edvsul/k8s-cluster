@@ -1,0 +1,14 @@
+apiVersion: tailscale.com/v1alpha1
+kind: Connector
+metadata:
+  name: home-subnet-router
+spec:
+  hostname: k8s-home-subnet-router
+  subnetRouter:
+    advertiseRoutes:
+      # Cilium LoadBalancer IP pool (lan-pool: 10.0.0.240-250) — covers the
+      # ingress VIP and any future LoadBalancer services without exposing the
+      # rest of the home LAN.
+      - "10.0.0.240/28"
+  tags:
+    - "tag:k8s"
