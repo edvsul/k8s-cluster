@@ -21,6 +21,12 @@ spec:
                   - ALL
               seccompProfile:
                 type: RuntimeDefault
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                memory: 100Mi
             args:
             - edvsul/k8s-cluster
 
