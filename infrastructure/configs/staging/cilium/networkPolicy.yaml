@@ -4,8 +4,12 @@ metadata:
   name: "deny-all"
   namespace: "linkding"
 spec:
-  endpointSelector: {}
+  endpointSelector:
+    matchLabels:
+      app: nextcloud
   ingress: 
-  - {}
-  egress:
-  - {}
+  - fromEndpoints:
+    - matchLabels:
+        pod: cloudflared
+  # egress:
+  # - {}
