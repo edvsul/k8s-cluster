@@ -8,7 +8,5 @@ spec:
     matchLabels:
       app: linkding
   egress:
-    - toPorts:
-      - ports:
-        - port: "7844"
-          protocol: TCP
+    - toCIDRSet:
+      - cidr: "0.0.0.0/0"
