@@ -8,5 +8,8 @@ spec:
     matchLabels:
       app: linkding
   egress:
-    - toCIDRSet:
-      - cidr: "0.0.0.0/0"
+    - toEntities:
+      - world
+      egressDeny:
+      - toEntities:
+        - world
