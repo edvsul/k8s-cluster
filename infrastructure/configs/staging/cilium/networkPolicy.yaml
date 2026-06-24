@@ -1,7 +1,7 @@
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-  name: "deny-all"
+  name: "allow-cloudflared-to-linkding"
   namespace: "linkding"
 spec:
   endpointSelector:
