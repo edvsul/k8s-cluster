@@ -5,5 +5,7 @@ metadata:
   namespace: "linkding"
 spec:
   endpointSelector: {}
-  ingress: {}
-  egress: {}
+  ingress: 
+  - {}
+  egress:
+  - {}
