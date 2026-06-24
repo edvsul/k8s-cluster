@@ -1,13 +1,9 @@
-# apiVersion: "cilium.io/v2"
-# kind: CiliumNetworkPolicy
-# metadata:
-#   name: "deny-egress-example"
-#   namespace: "linkding"
-# spec:
-#   endpointSelector:
-#     matchLabels:
-#       pod: cloudflared
-#   egressDeny:
-#   - toEndpoints:
-#     - matchLabels:
-#         app: linkding
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: "deny-all"
+  namespace: "linkding"
+spec:
+  endpointSelector: {}
+  ingress: {}
+  egress: {}
