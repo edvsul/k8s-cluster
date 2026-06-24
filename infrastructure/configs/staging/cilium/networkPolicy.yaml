@@ -10,5 +10,5 @@ spec:
   egress:
     - toPorts:
       - ports:
-        - port: "80"
+        - port: "7844"
           protocol: TCP
