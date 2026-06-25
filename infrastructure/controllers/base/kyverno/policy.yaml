@@ -33,6 +33,7 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+                - cilium-test-1
       preconditions:
         all:
           - key: "{{ request.operation || 'BACKGROUND' }}"
@@ -67,6 +68,7 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+                - cilium-test-1
       preconditions:
         all:
           - key: "{{ request.operation || 'BACKGROUND' }}"
@@ -99,6 +101,7 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+                - cilium-test-1
       preconditions:
         all:
           - key: "{{ request.operation || 'BACKGROUND' }}"
@@ -148,6 +151,7 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+                - cilium-test-1
       preconditions:
         all:
           - key: "{{ request.operation || 'BACKGROUND' }}"
@@ -187,6 +191,7 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+                - cilium-test-1
       preconditions:
         all:
           - key: "{{ request.operation || 'BACKGROUND' }}"
@@ -230,6 +235,7 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+                - cilium-test-1
       preconditions:
         all:
           - key: "{{ request.operation || 'BACKGROUND' }}"
@@ -272,6 +278,7 @@ spec:
                 - kyverno
                 - flux-system
                 - renovate
+                - cilium-test-1
       preconditions:
         all:
           - key: "{{ request.operation || 'BACKGROUND' }}"
