@@ -16,6 +16,7 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: "renovate-to-github-dns"
+  namespace: "renovate"
 spec:
   endpointSelector:
     matchLabels:
