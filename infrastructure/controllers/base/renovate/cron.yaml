@@ -7,11 +7,11 @@ spec:
   schedule: "@hourly"
   concurrencyPolicy: Forbid
   jobTemplate:
-    metadata:
-      labels:
-        pod: renovate
     spec:
       template:
+        metadata:
+          labels:
+            pod: renovate
         spec:
           containers:
           - name: renovate
