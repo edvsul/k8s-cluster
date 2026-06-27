@@ -11,5 +11,12 @@ spec:
   - fromEndpoints:
     - matchLabels:
         pod: cloudflared
-  # egress:
-  # - {}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: "tofqdn-visibility"
+spec:
+  endpointSelector:
+    matchLabels:
+      app: renovate
