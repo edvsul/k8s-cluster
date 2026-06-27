@@ -26,5 +26,5 @@ spec:
     - matchName: "github.com"
     toPorts:
       - ports:
-        - port: "80"
+        - port: "443"
           protocol: TCP
