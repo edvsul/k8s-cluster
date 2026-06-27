@@ -23,7 +23,7 @@ spec:
       pod: renovate
   egress:
   - toFQDNs:
-    - matchName: "*.github.com"
+    - matchName: "github.com"
     toPorts:
       - ports:
         - port: "80"
