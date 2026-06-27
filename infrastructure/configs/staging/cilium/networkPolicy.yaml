@@ -18,9 +18,9 @@ metadata:
   name: "renovate-to-github-dns"
   namespace: "renovate"
 spec:
-  endpointSelector:
-    matchLabels:
-      pod: renovate
+  endpointSelector: {}
+    # matchLabels:
+    #   pod: renovate
   egress:
     - toEndpoints:
       - matchLabels:
