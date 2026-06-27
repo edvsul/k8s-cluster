@@ -11,3 +11,19 @@ spec:
   - fromEndpoints:
     - matchLabels:
         pod: cloudflared
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: "renovate-to-github-dns"
+spec:
+  endpointSelector:
+    matchLabels:
+      pod: renovate
+  egress:
+  - toFQDNs:
+    - matchName: "*.github.com"
+    toPorts:
+      - ports:
+        - port: "80"
+          protocol: TCP
