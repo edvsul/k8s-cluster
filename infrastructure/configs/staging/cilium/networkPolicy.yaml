@@ -19,8 +19,6 @@ metadata:
   namespace: "renovate"
 spec:
   endpointSelector: {}
-    # matchLabels:
-    #   pod: renovate
   egress:
     - toEndpoints:
       - matchLabels:
