@@ -30,14 +30,8 @@ spec:
         - ports:
           - port: "53"
             protocol: ANY
-          rules:
-            dns:
-              - matchPattern: "*"
-    - toFQDNs:
-      - matchName: "github.com"
-      - matchPattern: "*.github.com"
-      - matchPattern: "*.githubusercontent.com"
-      # toPorts:
-      #   - ports:
-      #       - port: "443"
-      #         protocol: TCP
+    - toEntities:
+      - world
+      toPorts:
+      - ports:
+        - { port: "443", protocol: TCP }
