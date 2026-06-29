@@ -15,7 +15,7 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: "renovate-to-github-dns"
+  name: "renovate-to-world-443"
   namespace: "renovate"
 spec:
   endpointSelector: {}
