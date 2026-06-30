@@ -15,7 +15,7 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: "renovate-to-github-dns"
+  name: "renovate-to-https"
   namespace: "renovate"
 spec:
   endpointSelector: {}
@@ -30,10 +30,8 @@ spec:
         - ports:
           - port: "53"
             protocol: ANY
-          rules:
-            dns:
-              - matchPattern: "*"
-    - toFQDNs:
-      - matchName: "github.com"
-      - matchPattern: "*.github.com"
-      - matchPattern: "*.githubusercontent.com"
+    - toEntities:
+      - world
+      toPorts:
+      - ports:
+        - { port: "443", protocol: TCP }
