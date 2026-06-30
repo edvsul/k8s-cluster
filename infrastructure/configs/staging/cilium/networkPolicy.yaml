@@ -15,10 +15,12 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: "renovate-to-world-443"
+  name: "renovate-to-github-dns"
   namespace: "renovate"
 spec:
   endpointSelector: {}
+    # matchLabels:
+    #   pod: renovate
   egress:
     - toEndpoints:
       - matchLabels:
@@ -28,8 +30,7 @@ spec:
         - ports:
           - port: "53"
             protocol: ANY
-    - toEntities:
-      - world
-      toPorts:
-      - ports:
-        - { port: "443", protocol: TCP }
+    - toFQDNs:
+      - matchName: "github.com"
+      - matchPattern: "*.github.com"
+      - matchPattern: "*.githubusercontent.com"
