@@ -51,8 +51,6 @@
             replicas: 1
             rollOutPods: true
           rollOutCiliumPods: true
-          dnsProxy:
-            enableTransparentMode: false
           hubble:
             relay:
               enabled: true
