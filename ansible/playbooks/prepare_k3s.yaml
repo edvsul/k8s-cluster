@@ -2,19 +2,28 @@
 - name: Prepare nodes for K3s installation
   hosts: all
   become: yes
-  
+
+  vars:
+    # LVM sizing (server nodes get a slightly larger root LV)
+    lvm_vg: ubuntu-vg
+    lvm_lv: ubuntu-lv
+    lvm_size_server: 105G
+    lvm_size_agent: 100G
+
   tasks:
+    # --- System packages ---
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: yes
         cache_valid_time: 3600
-  
+
     - name: Upgrade all Ubuntu packages
       ansible.builtin.apt:
         upgrade: dist
         autoremove: yes
         autoclean: yes
 
+    # --- Swap ---
     - name: Disable swap
       ansible.builtin.shell: swapoff -a
       when: ansible_swaptotal_mb > 0
@@ -26,6 +35,7 @@
         regexp: '^\s*[^#].*\sswap\s'
         state: absent
 
+    # --- Firewall ---
     - name: Disable firewalld
       ansible.builtin.systemd:
         name: firewalld
@@ -33,6 +43,7 @@
         enabled: no
       failed_when: false
 
+    # --- Kernel limits ---
     - name: Increase inotify limits
       ansible.posix.sysctl:
         name: "{{ item.name }}"
@@ -43,3 +54,30 @@
       loop:
         - { name: fs.inotify.max_user_watches, value: "524288" }
         - { name: fs.inotify.max_user_instances, value: "512" }
+
+    # --- Disable multipath (required for Longhorn) ---
+    - name: Stop multipathd service
+      ansible.builtin.systemd:
+        name: multipathd
+        state: stopped
+      ignore_errors: yes
+
+    - name: Disable multipathd service
+      ansible.builtin.systemd:
+        name: multipathd
+        enabled: no
+      ignore_errors: yes
+
+    - name: Mask multipathd service
+      ansible.builtin.systemd:
+        name: multipathd
+        masked: yes
+      ignore_errors: yes
+
+    # --- Extend LVM root volume ---
+    - name: Extend logical volume and resize filesystem
+      community.general.lvol:
+        vg: "{{ lvm_vg }}"
+        lv: "{{ lvm_lv }}"
+        size: "{{ lvm_size_server if ('server' in group_names or 'tag_master' in group_names) else lvm_size_agent }}"
+        resizefs: yes

@@ -8,12 +8,6 @@
 python3 -m pip install ansible-core
 ```
 
-## Run Playbook to extend LVM on nodes
-
-```bash
-ansible-playbook -i ~/.rostr/generated/ansible-inventory.yaml playbooks/extend_lvm.yaml
-```
-
 ## Upgrade
 
 See [k3s-ansible](https://github.com/k3s-io/k3s-ansible) for upgrade instructions.
@@ -36,6 +30,9 @@ This will:
 - Update apt cache and upgrade all Ubuntu packages
 - Disable swap immediately and remove from `/etc/fstab`
 - Stop and disable firewalld service
+- Increase inotify limits
+- Stop, disable and mask `multipathd` (required for Longhorn)
+- Extend the root LVM logical volume and resize the filesystem
 
 ## Install K3s
 
