@@ -75,6 +75,9 @@
           k8sServiceHost: {{ k8s_service_host }}
           k8sServicePort: {{ k8s_service_port }}
           kubeProxyReplacement: true
+          ipam:
+            operator:
+              clusterPoolIPv4PodCIDRList: "10.42.0.0/16"
           # Restrict Cilium to the physical LAN NIC(s). Without this it also
           # monitors tailscale0 for MTU, which causes bandwidth issues when the
           # in-cluster Tailscale operator/Connector is running.
@@ -109,8 +112,6 @@
           --version {{ cilium_version }}
           --namespace {{ cilium_namespace }}
           --values /etc/rancher/k3s/cilium-values.yaml
-          --wait
-          --timeout 5m
       register: helm_result
       changed_when: "'has been upgraded' in helm_result.stdout or 'has been installed' in helm_result.stdout"
 
@@ -119,6 +120,20 @@
         KUBECONFIG: "{{ kubeconfig }}"
       ansible.builtin.command:
         cmd: kubectl -n {{ cilium_namespace }} rollout status deploy/cilium-operator --timeout=180s
+      changed_when: false
+
+    - name: Wait for Cilium CRDs to be registered by the operator
+      environment:
+        KUBECONFIG: "{{ kubeconfig }}"
+      ansible.builtin.command:
+        cmd: >
+          kubectl get crd
+          ciliumloadbalancerippools.cilium.io
+          ciliuml2announcementpolicies.cilium.io
+      register: crd_check
+      until: crd_check.rc == 0
+      retries: 30
+      delay: 10
       changed_when: false
 
     - name: Apply CiliumLoadBalancerIPPool
