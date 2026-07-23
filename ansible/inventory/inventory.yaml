@@ -8,6 +8,7 @@ k3s_cluster:
       hosts:
         10.0.0.77:
         10.0.0.76:
+        10.0.0.75:
 
   # Required Vars
   vars:

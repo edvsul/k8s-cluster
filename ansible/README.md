@@ -42,6 +42,14 @@ Install K3s cluster and download kubeconfig:
 ansible-playbook k3s.orchestration.site -i inventory/inventory.yaml --tags kubeconfig
 ```
 
+## Post K3s install
+
+Configure image garbage collection settings post install:
+
+```bash
+ansible-playbook -i inventory/inventory.yaml playbooks/configure_image_gc.yaml
+```
+
 ## Uninstall K3s
 
 ```bash
