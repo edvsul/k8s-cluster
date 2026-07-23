@@ -16,4 +16,4 @@ k3s_cluster:
     ansible_user: admin
     k3s_version: v1.34.1+k3s1
     api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
-    extra_server_args: "--flannel-backend=none --disable-network-policy --disable-kube-proxy --disable=traefik --disable=servicelb"
+    extra_server_args: "--flannel-backend=none --disable-network-policy --disable-kube-proxy --disable=traefik --disable=servicelb --node-taint node-role.kubernetes.io/control-plane:NoSchedule"

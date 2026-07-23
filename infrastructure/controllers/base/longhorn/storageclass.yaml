@@ -8,7 +8,6 @@ provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 reclaimPolicy: Retain
 parameters:
-  numberOfReplicas: "2"
   staleReplicaTimeout: "30"
   dataLocality: "best-effort"
   replicaAutoBalance: "best-effort"

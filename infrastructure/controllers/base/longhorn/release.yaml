@@ -26,5 +26,4 @@ spec:
       backupTargetCredentialSecret: "longhorn-backup-s3"
     defaultSettings:
       concurrentAutomaticEngineUpgradePerNodeLimit: 1
-      defaultReplicaCount: "2"
       storageOverProvisioningPercentage: "500"
