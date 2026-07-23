@@ -104,7 +104,7 @@ spec:
       requests:
         memory: 2Gi
       limits:
-        memory: 4Gi
+        memory: 6Gi
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
     internalDatabase:
