@@ -10,11 +10,14 @@ The kubernetes homelab
 - cloudflared https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/downloads/
 - sops https://fluxcd.io/flux/guides/mozilla-sops/
 
-**Hardware:**
-- **Systems**: 2x Dell Optiplex 7010
-- **CPU**: 2 cores per system
-- **RAM**: 8 GB per system
-- **OS**: Ubuntu Server 24.04
+**Hardware:** 4 nodes — 1 control plane + 3 workers
+
+| Role | IP | Model | CPU | RAM | OS |
+|------|-----|-------|-----|-----|-----|
+| Control plane | 10.0.0.78 | Dell OptiPlex 9020 | i3-4150, 4 cores | 8 GB | Ubuntu Server 24.04 LTS |
+| Worker | 10.0.0.77 | Dell OptiPlex 7010 | i3-3240, 4 cores | 8 GB | Ubuntu Server 24.04 LTS |
+| Worker | 10.0.0.76 | HP EliteDesk 800 G1 TWR | i5-4570, 4 cores | 16 GB | Ubuntu Server 26.04 LTS |
+| Worker | 10.0.0.75 | HP EliteDesk 800 G1 TWR | i5-4570, 4 cores | 16 GB | Ubuntu Server 26.04 LTS |
 
 **Kubernetes Distribution:**
 - **k3s** - Lightweight Kubernetes distribution
