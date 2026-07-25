@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: linkding
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: linkding
