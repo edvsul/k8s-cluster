@@ -24,7 +24,7 @@ spec:
     valuesKey: password
     targetPath: nextcloud.password
   values:
-    replicaCount: 2
+    #replicaCount: 2
     nextcloud:
       host: nextcloud.edvsul.org
       securityContext:
@@ -99,7 +99,7 @@ spec:
       #   subPath: mpm.conf
     persistence:
       enabled: true
-      accessMode: ReadWriteMany
+      #accessMode: ReadWriteMany
       storageClass: longhorn-k8s-cluster
       size: 40Gi
     resources:
