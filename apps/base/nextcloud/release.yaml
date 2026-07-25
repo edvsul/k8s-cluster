@@ -24,7 +24,7 @@ spec:
     valuesKey: password
     targetPath: nextcloud.password
   values:
-    replicaCount: 2
+    replicaCount: 0
     nextcloud:
       host: nextcloud.edvsul.org
       securityContext:
