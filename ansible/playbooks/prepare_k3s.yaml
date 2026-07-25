@@ -23,6 +23,11 @@
         autoremove: yes
         autoclean: yes
 
+    - name: Install NFS client (required for Longhorn RWX volumes)
+      ansible.builtin.apt:
+        name: nfs-common
+        state: present
+
     # --- Swap ---
     - name: Disable swap
       ansible.builtin.shell: swapoff -a
