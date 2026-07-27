@@ -40,9 +40,14 @@ spec:
             port: 9090
           initialDelaySeconds: 5
           periodSeconds: 5
+        env:
+        - name: LD_DB_ENGINE
+          value: "postgres"
+        - name: LD_DB_HOST
+          value: "linkding-db"
         envFrom:
         - secretRef:
-            name: linkding-credentials
+            name: linkding-postgres-secret
         volumeMounts:
         - name: linkding-pv
           mountPath: /etc/linkding/data

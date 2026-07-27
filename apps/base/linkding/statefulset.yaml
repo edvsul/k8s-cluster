@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: linkding-db
+spec:
+  serviceName: linkding-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linkding-db
+  template:
+    metadata:
+      labels:
+        app: linkding-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+          - containerPort: 5432
+          envFrom:
+          - secretRef:
+              name: linkding-postgres-secret
+          volumeMounts:
+          - name: postgres-data
+            mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc

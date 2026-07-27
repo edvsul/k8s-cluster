@@ -8,3 +8,14 @@ spec:
   selector:
     app: linkding
   type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkding-db
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: linkding-db
