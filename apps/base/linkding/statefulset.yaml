@@ -13,6 +13,17 @@ spec:
       labels:
         app: linkding-db
     spec:
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+        runAsNonRoot: true
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: postgres
         image: postgres:16-alpine
