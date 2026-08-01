@@ -1,6 +1,14 @@
 # k8s-cluster
 The kubernetes homelab
 
+## Cluster Topology
+
+All four nodes sit on a single flat LAN segment (`10.0.0.0/24`) behind the home
+router. The three workers contribute local disk to Longhorn, which replicates
+volumes between them and ships backups off-site to AWS S3.
+
+![Homelab cluster topology: four nodes on a 10.0.0.0/24 LAN, with Longhorn volumes on the three workers backed up to AWS S3](docs/images/cluster-topology.png)
+
 ## Infrastructure Specifications
 
 **Prerequisites:**
