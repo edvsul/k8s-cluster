@@ -61,3 +61,13 @@ spec:
       - name: linkding-pv
         persistentVolumeClaim:
           claimName: linkding-data-pvc
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: linkding
+          matchLabelKeys: [pod-template-hash]
+          # Exclude tainted node from calculation. Important while upgrading kubernetes
+          nodeTaintsPolicy: Honor
