@@ -4,7 +4,7 @@
   become: yes
 
   vars:
-    cilium_version: "1.19.4"
+    cilium_version: "1.20.0"
     cilium_namespace: kube-system
     k8s_service_host: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
     k8s_service_port: 6443
@@ -75,6 +75,8 @@
           k8sServiceHost: {{ k8s_service_host }}
           k8sServicePort: {{ k8s_service_port }}
           kubeProxyReplacement: true
+          # Initially installed cilium version
+          upgradeCompatibility: "1.19"
           ipam:
             operator:
               clusterPoolIPv4PodCIDRList: "10.42.0.0/16"
