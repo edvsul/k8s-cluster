@@ -18,3 +18,12 @@ spec:
     crds: CreateReplace
   upgrade:
     crds: CreateReplace
+  values:
+    admissionController:
+      replicas: 2
+    backgroundController:
+      replicas: 2
+    cleanupController:
+      replicas: 2
+    reportsController:
+      replicas: 2
