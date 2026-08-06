@@ -4,3 +4,4 @@ resources:
   - namespace.yaml
   - statefulset.yaml
   - pvc.yaml
+  - secrets.yaml
