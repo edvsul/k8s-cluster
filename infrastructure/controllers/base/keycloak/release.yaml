@@ -56,7 +56,7 @@ spec:
 
     extraEnv: |
       - name: KC_HOSTNAME
-        value: https://sso.edvsul.org
+        value: https://keycloak.edvsul.org
       - name: JAVA_OPTS_APPEND
         value: -XX:MaxRAMPercentage=70
       - name: KC_BOOTSTRAP_ADMIN_USERNAME
