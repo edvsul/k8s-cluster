@@ -50,6 +50,10 @@ spec:
     http:
       relativePath: "/"
 
+    command:
+      - "/opt/keycloak/bin/kc.sh"
+      - "start"
+
     extraEnv: |
       - name: KC_HOSTNAME
         value: https://sso.edvsul.org
