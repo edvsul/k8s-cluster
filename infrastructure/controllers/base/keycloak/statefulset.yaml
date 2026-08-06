@@ -31,7 +31,7 @@ spec:
         - containerPort: 5432
         envFrom:
         - secretRef:
-            name: linkding-postgres-secret
+            name: keycloak-postgres-secret
         volumeMounts:
         - name: postgres-data
           mountPath: /var/lib/postgresql
