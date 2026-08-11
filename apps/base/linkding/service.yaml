@@ -14,7 +14,7 @@ kind: Service
 metadata:
   name: linkding-db
 spec:
-  clusterIP: None
+  clusterIP: None # Headless service
   ports:
     - port: 5432
       targetPort: 5432
