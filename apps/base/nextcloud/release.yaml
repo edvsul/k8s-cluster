@@ -59,6 +59,7 @@ spec:
               'maintenance_window_start' => 1, # Start maintenance window at 1 UTC time
               'preview_max_x' => 2048, # Change photos size limit to 2048x2048 to prevent OOMKills when generating previews for large photos
               'preview_max_y' => 2048,
+              'twofactor_enforced' => 'true', # Require a second factor (TOTP) for all users
             );
       extraInitContainers:
         # https://github.com/nextcloud/docker/issues/763#issuecomment-2752172569
