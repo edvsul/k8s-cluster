@@ -9,15 +9,3 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: longhorn-k8s-cluster
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-pvc
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: longhorn-k8s-cluster
