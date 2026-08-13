@@ -76,7 +76,7 @@ spec:
       limits:
         memory: 6Gi
     livenessProbe:
-      failureThreshold: 100
+      failureThreshold: 60
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
     internalDatabase:
