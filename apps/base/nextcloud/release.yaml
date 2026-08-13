@@ -61,6 +61,10 @@ spec:
               'preview_max_y' => 2048,
               'twofactor_enforced' => 'true', # Require a second factor (TOTP) for all users
             );
+      extraVolumeMounts:
+      - name: php-confd
+        mountPath: "/usr/local/etc/php/conf.d/redis-session.ini"
+        subPath: redis-session.ini
     persistence:
       enabled: true
       accessMode: ReadWriteMany
