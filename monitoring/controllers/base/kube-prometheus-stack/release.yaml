@@ -39,3 +39,13 @@ spec:
         - secretName: edvsul.org
           hosts:
           - grafana.edvsul.org
+    prometheus:
+      prometheusSpec:
+        retention: 7d
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ReadWriteOnce]
+              resources:
+                requests:
+                  storage: 10Gi
