@@ -37,8 +37,8 @@ spec:
             - ALL
         seccompProfile: # Applies the container runtime's default secure computing mode profile
           type: RuntimeDefault
-      livenessProbe:
-        failureThreshold: 15
+    livenessProbe:
+      failureThreshold: 15
       mariaDbInitContainer:
         securityContext:
           allowPrivilegeEscalation: false
