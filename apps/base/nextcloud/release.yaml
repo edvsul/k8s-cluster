@@ -61,37 +61,6 @@ spec:
               'preview_max_y' => 2048,
               'twofactor_enforced' => 'true', # Require a second factor (TOTP) for all users
             );
-      extraInitContainers:
-        # https://github.com/nextcloud/docker/issues/763#issuecomment-2752172569
-        # create empty redis file for nextcloud entrypoint to override it
-        - name: init-redis-session-ini
-          image: busybox:1.38.0
-          command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            runAsUser: 33
-            runAsGroup: 33
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
-          resources:
-            requests:
-              memory: 8Mi
-            limits:
-              memory: 16Mi
-          volumeMounts:
-            - name: nextcloud-redis-session-ini
-              mountPath: "/usr/local/etc/php/conf.d"
-      extraVolumes:
-      - name: nextcloud-redis-session-ini
-        emptyDir: {}
-      extraVolumeMounts:
-      - name: nextcloud-redis-session-ini
-        mountPath: "/usr/local/etc/php/conf.d/redis-session.ini" # fix permission denied error
-        subPath: redis-session.ini
     persistence:
       enabled: true
       accessMode: ReadWriteMany
