@@ -37,8 +37,6 @@ spec:
             - ALL
         seccompProfile: # Applies the container runtime's default secure computing mode profile
           type: RuntimeDefault
-    livenessProbe:
-      failureThreshold: 15
       mariaDbInitContainer:
         securityContext:
           allowPrivilegeEscalation: false
@@ -77,6 +75,8 @@ spec:
         memory: 2Gi
       limits:
         memory: 6Gi
+    livenessProbe:
+      failureThreshold: 100
     phpClientHttpsFix: # Fixes the nextcloud login issue
       enabled: true
     internalDatabase:
