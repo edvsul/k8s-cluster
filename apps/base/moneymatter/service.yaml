@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: moneymatter-frontend
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: moneymatter-frontend
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moneymatter-backend
+spec:
+  ports:
+  - port: 8081
+    targetPort: 8081
+  selector:
+    app: moneymatter-backend
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: currency-rates-api
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: currency-rates-api
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moneymatter-db
+spec:
+  clusterIP: None # Headless service
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: moneymatter-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moneymatter-redis
+spec:
+  clusterIP: None # Headless service
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: moneymatter-redis

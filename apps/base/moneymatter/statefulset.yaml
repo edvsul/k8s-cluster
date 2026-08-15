@@ -1,0 +1,210 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: moneymatter-db
+spec:
+  serviceName: moneymatter-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moneymatter-db
+  template:
+    metadata:
+      labels:
+        app: moneymatter-db
+    spec:
+      securityContext:
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: postgres
+        # Postgres 16-alpine. Upstream's self-hosting compose pins postgres:16, so
+        # the app's migrations are only tested against this major.
+        image: postgres@sha256:44c4ee9810eff91f7eab4d822642e01115b1a9eccce4bcbdde7604752d68eac6
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: moneymatter-postgres-secret
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn-k8s-cluster
+        resources:
+          requests:
+            storage: 2Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: moneymatter-redis
+spec:
+  serviceName: moneymatter-redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moneymatter-redis
+  template:
+    metadata:
+      labels:
+        app: moneymatter-redis
+    spec:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: redis
+        # redis 7-alpine
+        image: redis@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        resources:
+          requests:
+            memory: 32Mi
+            cpu: 10m
+          limits:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        readinessProbe:
+          exec:
+            command: ["redis-cli", "ping"]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command: ["redis-cli", "ping"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn-k8s-cluster
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: currency-rates-api
+spec:
+  serviceName: currency-rates-api
+  replicas: 1
+  selector:
+    matchLabels:
+      app: currency-rates-api
+  template:
+    metadata:
+      labels:
+        app: currency-rates-api
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: currency-rates-api
+        image: letehaha/currency-rates-api@sha256:02e1fd8b92068daca811054d0feeecfa6f6baedc0c6586a42be35d275d43e23e
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DATABASE_URL
+          value: "sqlite:/app/data/currency_rates.db?mode=rwc"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "8080"
+        - name: DEFAULT_API_BASE
+          value: "USD"
+        - name: SEED_ON_STARTUP
+          value: "true"
+        - name: SYNC_ON_STARTUP
+          value: "true"
+        - name: SYNC_CRON
+          value: "0 0 8,12,16,20 * * *"
+        - name: RUST_LOG
+          value: "currency_rates=info,tower_http=info"
+        volumeMounts:
+        - name: currency-rates-data
+          mountPath: /app/data
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 10m
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: currency-rates-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn-k8s-cluster
+        resources:
+          requests:
+            storage: 1Gi

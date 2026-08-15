@@ -1,0 +1,149 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moneymatter-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moneymatter-backend
+  template:
+    metadata:
+      labels:
+        app: moneymatter-backend
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: backend
+        image: letehaha/budget-tracker-be@sha256:d15f5d1538528d680f6bcfa6659168d7a2e31835526eaa8aaa6a82771a65b94f
+        ports:
+        - containerPort: 8081
+        env:
+        - name: NODE_ENV
+          value: "production"
+        # Must match the URL the browser opens, or auth sessions are rejected.
+        - name: BETTER_AUTH_URL
+          value: "https://money.edvsul.org"
+        - name: AUTH_ORIGIN
+          value: "https://money.edvsul.org"
+        - name: APPLICATION_HOST
+          value: "0.0.0.0"
+        - name: APPLICATION_PORT
+          value: "8081"
+        - name: APPLICATION_DB_HOST
+          value: "moneymatter-db"
+        - name: APPLICATION_DB_PORT
+          value: "5432"
+        - name: APPLICATION_DB_DIALECT
+          value: "postgres"
+        - name: APPLICATION_REDIS_HOST
+          value: "moneymatter-redis"
+        # Defaults to http://currency-rates-api:8080 in the image; set explicitly
+        # so the service name is not load-bearing on an upstream default.
+        - name: CURRENCY_RATES_API_URL
+          value: "http://currency-rates-api:8080"
+        # Unlocks the behaviours a self-hosted instance is allowed (custom AI
+        # endpoint, backup restore backfill).
+        - name: IS_SELF_HOST
+          value: "true"
+        envFrom:
+        - secretRef:
+            name: moneymatter-credentials
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 50m
+          limits:
+            memory: 768Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        # The entrypoint runs DB migrations before binding, so /health is
+        # unreachable for a while on first start.
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          periodSeconds: 10
+          failureThreshold: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moneymatter-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moneymatter-frontend
+  template:
+    metadata:
+      labels:
+        app: moneymatter-frontend
+    spec:
+      securityContext:
+        # The image's nginx.conf and /app/config.js are owned 101:101 and the
+        # entrypoint rewrites them at startup, so it has to run as uid 101.
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: frontend
+        image: letehaha/budget-tracker-fe@sha256:976ef9dd72877cf8d093dea619b22cef47eb4e7bf988ebe963d5d314eae56e53
+        ports:
+        - containerPort: 80
+        env:
+        # Empty API_HTTP selects same-origin mode: the SPA calls a relative
+        # /api/v1 and nginx in this container proxies /api/ to BACKEND_URL.
+        - name: API_HTTP
+          value: ""
+        - name: API_VER
+          value: "/api/v1"
+        - name: BACKEND_URL
+          value: "http://moneymatter-backend:8081"
+        - name: IS_SELF_HOST
+          value: "true"
+        resources:
+          requests:
+            memory: 32Mi
+            cpu: 10m
+          limits:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10

@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: moneymatter
+spec:
+  ingressClassName: cilium
+  tls:
+    - secretName: edvsul.org
+      hosts:
+        - money.edvsul.org
+  rules:
+    - host: money.edvsul.org
+      http:
+        paths:
+          # The frontend container serves the SPA and reverse-proxies /api to the
+          # backend, so the browser talks to a single origin.
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: moneymatter-frontend
+                port:
+                  number: 80
