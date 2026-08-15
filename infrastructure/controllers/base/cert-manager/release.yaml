@@ -20,9 +20,9 @@ spec:
     resources:
       requests:
         cpu: 10m
-        memory: 32Mi
+        memory: 64Mi
       limits:
-        memory: 40Mi
+        memory: 192Mi
     cainjector:
       resources:
         requests:
@@ -31,9 +31,10 @@ spec:
         limits:
           memory: 100Mi
     webhook:
+      # Was 40Mi while sitting at 38Mi in steady state — next in line to OOM.
       resources:
         requests:
           cpu: 10m
-          memory: 32Mi
+          memory: 64Mi
         limits:
-          memory: 40Mi
+          memory: 128Mi
