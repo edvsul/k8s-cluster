@@ -5,4 +5,4 @@ resources:
   #- n8n
   - linkding
   - nextcloud
-  - moneymatter
+  #- moneymatter
