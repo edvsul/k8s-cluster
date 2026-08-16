@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: moneymatter-backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: moneymatter-backend
@@ -21,7 +21,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: backend
-        image: letehaha/budget-tracker-be@sha256:d15f5d1538528d680f6bcfa6659168d7a2e31835526eaa8aaa6a82771a65b94f
+        image: letehaha/budget-tracker-be:latest@sha256:d15f5d1538528d680f6bcfa6659168d7a2e31835526eaa8aaa6a82771a65b94f
         ports:
         - containerPort: 8081
         env:
@@ -32,8 +32,6 @@ spec:
           value: "https://money.edvsul.org"
         - name: AUTH_ORIGIN
           value: "https://money.edvsul.org"
-        - name: APPLICATION_HOST
-          value: "0.0.0.0"
         - name: APPLICATION_PORT
           value: "8081"
         - name: APPLICATION_DB_HOST
@@ -74,6 +72,8 @@ spec:
             port: 8081
           periodSeconds: 10
           failureThreshold: 30
+        # Shallow (/health is a static 200), but with >1 replica its job is to
+        # keep traffic off pods still running migrations during a rollout.
         readinessProbe:
           httpGet:
             path: /health
@@ -84,13 +84,23 @@ spec:
             path: /health
             port: 8081
           periodSeconds: 10
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: moneymatter-backend
+          matchLabelKeys: [pod-template-hash]
+          # Exclude tainted node from calculation. Important while upgrading kubernetes
+          nodeTaintsPolicy: Honor
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: moneymatter-frontend
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: moneymatter-frontend
@@ -110,16 +120,10 @@ spec:
           type: RuntimeDefault
       containers:
       - name: frontend
-        image: letehaha/budget-tracker-fe@sha256:976ef9dd72877cf8d093dea619b22cef47eb4e7bf988ebe963d5d314eae56e53
+        image: letehaha/budget-tracker-fe:latest@sha256:976ef9dd72877cf8d093dea619b22cef47eb4e7bf988ebe963d5d314eae56e53
         ports:
         - containerPort: 80
         env:
-        # Empty API_HTTP selects same-origin mode: the SPA calls a relative
-        # /api/v1 and nginx in this container proxies /api/ to BACKEND_URL.
-        - name: API_HTTP
-          value: ""
-        - name: API_VER
-          value: "/api/v1"
         - name: BACKEND_URL
           value: "http://moneymatter-backend:8081"
         - name: IS_SELF_HOST
@@ -147,3 +151,13 @@ spec:
             port: 80
           initialDelaySeconds: 30
           periodSeconds: 10
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: moneymatter-frontend
+          matchLabelKeys: [pod-template-hash]
+          # Exclude tainted node from calculation. Important while upgrading kubernetes
+          nodeTaintsPolicy: Honor

@@ -1,0 +1,19 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: moneymatter-backend-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: moneymatter-backend
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: moneymatter-frontend-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: moneymatter-frontend

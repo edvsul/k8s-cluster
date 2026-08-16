@@ -24,7 +24,7 @@ spec:
       - name: postgres
         # Postgres 16-alpine. Upstream's self-hosting compose pins postgres:16, so
         # the app's migrations are only tested against this major.
-        image: postgres@sha256:44c4ee9810eff91f7eab4d822642e01115b1a9eccce4bcbdde7604752d68eac6
+        image: postgres:16-alpine@sha256:44c4ee9810eff91f7eab4d822642e01115b1a9eccce4bcbdde7604752d68eac6
         ports:
         - containerPort: 5432
         envFrom:
@@ -90,7 +90,7 @@ spec:
       containers:
       - name: redis
         # redis 7-alpine
-        image: redis@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+        image: redis:7-alpine@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
         ports:
         - containerPort: 6379
         volumeMounts:
@@ -152,26 +152,12 @@ spec:
           type: RuntimeDefault
       containers:
       - name: currency-rates-api
-        image: letehaha/currency-rates-api@sha256:02e1fd8b92068daca811054d0feeecfa6f6baedc0c6586a42be35d275d43e23e
+        image: letehaha/currency-rates-api:v0.2.1@sha256:02e1fd8b92068daca811054d0feeecfa6f6baedc0c6586a42be35d275d43e23e
         ports:
         - containerPort: 8080
         env:
         - name: DATABASE_URL
           value: "sqlite:/app/data/currency_rates.db?mode=rwc"
-        - name: HOST
-          value: "0.0.0.0"
-        - name: PORT
-          value: "8080"
-        - name: DEFAULT_API_BASE
-          value: "USD"
-        - name: SEED_ON_STARTUP
-          value: "true"
-        - name: SYNC_ON_STARTUP
-          value: "true"
-        - name: SYNC_CRON
-          value: "0 0 8,12,16,20 * * *"
-        - name: RUST_LOG
-          value: "currency_rates=info,tower_http=info"
         volumeMounts:
         - name: currency-rates-data
           mountPath: /app/data
