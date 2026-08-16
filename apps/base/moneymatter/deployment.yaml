@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: moneymatter-backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: moneymatter-backend
@@ -19,6 +19,38 @@ spec:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+      # Kubernetes has no depends_on. Upstream's compose gates the backend on
+      # db/redis being healthy; without that the entrypoint runs db:migrate
+      # against a Postgres that is not accepting connections yet, exits 1, and
+      # relies on CrashLoopBackOff to retry. Gate it explicitly instead.
+      initContainers:
+      - name: wait-for-deps
+        image: postgres:16-alpine@sha256:44c4ee9810eff91f7eab4d822642e01115b1a9eccce4bcbdde7604752d68eac6
+        command:
+        - sh
+        - -c
+        - |
+          until pg_isready -h moneymatter-db -p 5432 -U "$APPLICATION_DB_USERNAME" -d "$APPLICATION_DB_DATABASE"; do
+            echo "waiting for postgres..."; sleep 2
+          done
+          until nc -z moneymatter-redis 6379; do
+            echo "waiting for redis..."; sleep 2
+          done
+          echo "dependencies ready"
+        envFrom:
+        - secretRef:
+            name: moneymatter-credentials
+        resources:
+          requests:
+            memory: 32Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
       containers:
       - name: backend
         image: letehaha/budget-tracker-be:latest@sha256:d15f5d1538528d680f6bcfa6659168d7a2e31835526eaa8aaa6a82771a65b94f
@@ -84,16 +116,6 @@ spec:
             path: /health
             port: 8081
           periodSeconds: 10
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app: moneymatter-backend
-          matchLabelKeys: [pod-template-hash]
-          # Exclude tainted node from calculation. Important while upgrading kubernetes
-          nodeTaintsPolicy: Honor
 ---
 apiVersion: apps/v1
 kind: Deployment
