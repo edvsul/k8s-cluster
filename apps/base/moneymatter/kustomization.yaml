@@ -4,6 +4,7 @@ namespace: moneymatter
 resources:
   - namespace.yaml
   - secrets.yaml
+  - tls-secret.yaml
   - statefulset.yaml
   - deployment.yaml
   - service.yaml

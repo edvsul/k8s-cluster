@@ -5,3 +5,4 @@ resources:
   - repository.yaml
   - release.yaml
   - secrets.yaml
+  - tls-secret.yaml
