@@ -21,19 +21,12 @@ spec:
       targetPath: firefly-iii.secrets.appKey
   values:
     firefly-db:
-      storage:
-        class: longhorn-k8s-cluster
-        accessModes: ReadWriteOnce
-        dataSize: 2Gi
-      backup:
-        pvc:
-          class: longhorn-k8s-cluster
-      configs:
-        existingSecret: firefly-iii-db-config
+      enabled: false
 
     firefly-iii:
       config:
         env:
+          DB_HOST: firefly-iii-db
           TZ: "Europe/Copenhagen"
         existingSecret: firefly-iii-credentials
 
@@ -73,3 +66,43 @@ spec:
 
     importer:
       enabled: false
+  # The chart has no initContainers value, and Kubernetes has no depends_on. The
+  # image runs Laravel migrations before the web server binds, so starting before
+  # Postgres accepts connections means a failed start and CrashLoopBackOff until
+  # the DB happens to be up. Gate it explicitly.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              name: firefly-iii
+            patch: |
+              - op: add
+                path: /spec/template/spec/initContainers
+                value:
+                  - name: wait-for-db
+                    image: postgres:18-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
+                    command:
+                      - sh
+                      - -c
+                      - |
+                        until pg_isready -h firefly-iii-db -p 5432 -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do
+                          echo "waiting for postgres..."; sleep 2
+                        done
+                        echo "postgres ready"
+                    envFrom:
+                      - secretRef:
+                          name: firefly-iii-db-config
+                    resources:
+                      requests:
+                        memory: 32Mi
+                        cpu: 10m
+                      limits:
+                        memory: 64Mi
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities:
+                        drop:
+                          - ALL

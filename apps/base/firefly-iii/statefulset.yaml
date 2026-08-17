@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: firefly-iii-db
+spec:
+  serviceName: firefly-iii-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: firefly-iii-db
+  template:
+    metadata:
+      labels:
+        app: firefly-iii-db
+    spec:
+      securityContext:
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: postgres
+        image: postgres:18-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15 # 18.4
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: firefly-iii-db-config
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn-k8s-cluster
+        resources:
+          requests:
+            storage: 2Gi
