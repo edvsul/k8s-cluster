@@ -22,18 +22,15 @@ spec:
   values:
     firefly-db:
       enabled: false
-
     firefly-iii:
       config:
         env:
           DB_HOST: firefly-iii-db
           TZ: "Europe/Copenhagen"
         existingSecret: firefly-iii-credentials
-
       persistence:
         storageClassName: longhorn-k8s-cluster
         storage: 2Gi
-
       podSecurityContext:
         runAsUser: 33
         runAsGroup: 33
@@ -46,14 +43,12 @@ spec:
         capabilities:
           drop:
             - ALL
-
       resources:
         requests:
           memory: 256Mi
           cpu: 50m
         limits:
           memory: 768Mi
-
       ingress:
         enabled: true
         className: cilium
@@ -63,13 +58,8 @@ spec:
           - secretName: "edvsul.org"
             hosts:
               - "firefly.edvsul.org"
-
     importer:
-      enabled: false
-  # The chart has no initContainers value, and Kubernetes has no depends_on. The
-  # image runs Laravel migrations before the web server binds, so starting before
-  # Postgres accepts connections means a failed start and CrashLoopBackOff until
-  # the DB happens to be up. Gate it explicitly.
+      enabled: true
   postRenderers:
     - kustomize:
         patches:
