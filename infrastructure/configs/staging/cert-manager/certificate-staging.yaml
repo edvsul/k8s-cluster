@@ -1,10 +1,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: edvsul.org
+  name: staging-edvsul.org
   namespace: cert-manager
 spec:
-  secretName: edvsul.org
+  secretName: staging-edvsul.org
   secretTemplate:
     annotations:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
@@ -12,7 +12,7 @@ spec:
       reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
       reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "longhorn-system,kube-system,monitoring,cilium-secrets,moneymatter"
   issuerRef:
-    name: letsencrypt-staging
+    name: staging-letsencrypt
     kind: ClusterIssuer
     group: cert-manager.io
   commonName: "*.edvsul.org"

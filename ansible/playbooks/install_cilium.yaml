@@ -61,7 +61,7 @@
                 hosts:
                   - hubble.edvsul.org
                 tls:
-                  - secretName: edvsul.org
+                  - secretName: staging-edvsul.org
                     hosts:
                       - hubble.edvsul.org
             metrics:

@@ -19,7 +19,7 @@ spec:
       enabled: true
       host: "longhorn.edvsul.org"
       tls: true
-      tlsSecret: "edvsul.org"
+      tlsSecret: "staging-edvsul.org"
       pathType: Prefix
     defaultBackupStore:
       backupTarget: "s3://k8s-cluster-longhorn-backups@eu-west-1/"

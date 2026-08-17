@@ -36,7 +36,7 @@ spec:
         - grafana.edvsul.org
         pathType: Prefix
         tls:
-        - secretName: edvsul.org
+        - secretName: staging-edvsul.org
           hosts:
           - grafana.edvsul.org
     prometheus:

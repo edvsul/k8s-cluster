@@ -1,0 +1,22 @@
+### Publicly trusted wildcard cert. Only firefly-iii needs a browser-trusted
+### chain; every other ingress stays on staging-edvsul.org.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: edvsul.org
+  namespace: cert-manager
+spec:
+  secretName: edvsul.org
+  secretTemplate:
+    annotations:
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: ".*"
+      reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "firefly-iii"
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+  commonName: "*.edvsul.org"
+  dnsNames:
+    - "*.edvsul.org"

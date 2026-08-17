@@ -5,7 +5,7 @@ metadata:
 spec:
   ingressClassName: cilium
   tls:
-    - secretName: edvsul.org
+    - secretName: staging-edvsul.org
       hosts:
         - money.edvsul.org
   rules:
