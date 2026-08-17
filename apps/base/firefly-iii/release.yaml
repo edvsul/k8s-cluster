@@ -60,6 +60,39 @@ spec:
               - "firefly.edvsul.org"
     importer:
       enabled: true
+      fireflyiii:
+        url: "http://firefly-iii:80"
+        vanityUrl: "https://firefly.edvsul.org"
+      config:
+        env:
+          TZ: "Europe/Copenhagen"
+      podSecurityContext:
+        runAsUser: 33
+        runAsGroup: 33
+        fsGroup: 33
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          memory: 128Mi
+          cpu: 25m
+        limits:
+          memory: 512Mi
+      ingress:
+        enabled: true
+        className: cilium
+        hosts:
+          - "firefly-import.edvsul.org"
+        tls:
+          - secretName: "edvsul.org"
+            hosts:
+              - "firefly-import.edvsul.org"
   postRenderers:
     - kustomize:
         patches:
