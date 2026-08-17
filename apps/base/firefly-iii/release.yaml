@@ -1,0 +1,75 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: firefly-iii
+  namespace: firefly-iii
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: firefly-iii-stack
+      version: "0.10.2"
+      sourceRef:
+        kind: HelmRepository
+        name: firefly-iii
+        namespace: firefly-iii
+      interval: 12h
+  valuesFrom:
+    - kind: Secret
+      name: firefly-iii-app-key-value
+      valuesKey: appKey
+      targetPath: firefly-iii.secrets.appKey
+  values:
+    firefly-db:
+      storage:
+        class: longhorn-k8s-cluster
+        accessModes: ReadWriteOnce
+        dataSize: 2Gi
+      backup:
+        pvc:
+          class: longhorn-k8s-cluster
+      configs:
+        existingSecret: firefly-iii-db-config
+
+    firefly-iii:
+      config:
+        env:
+          TZ: "Europe/Copenhagen"
+        existingSecret: firefly-iii-credentials
+
+      persistence:
+        storageClassName: longhorn-k8s-cluster
+        storage: 2Gi
+
+      podSecurityContext:
+        runAsUser: 33
+        runAsGroup: 33
+        fsGroup: 33
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+
+      resources:
+        requests:
+          memory: 256Mi
+          cpu: 50m
+        limits:
+          memory: 768Mi
+
+      ingress:
+        enabled: true
+        className: cilium
+        hosts:
+          - "firefly.edvsul.org"
+        tls:
+          - secretName: "edvsul.org"
+            hosts:
+              - "firefly.edvsul.org"
+
+    importer:
+      enabled: false

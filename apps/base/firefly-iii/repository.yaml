@@ -1,0 +1,8 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: firefly-iii
+  namespace: firefly-iii
+spec:
+  interval: 12h
+  url: https://firefly-iii.github.io/kubernetes/
