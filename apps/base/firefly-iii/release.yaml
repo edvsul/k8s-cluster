@@ -59,6 +59,8 @@ spec:
               - "firefly.edvsul.org"
     importer:
       enabled: true
+      image:
+        tag: "version-2.3.4"
       fireflyiii:
         url: "http://firefly-iii:80"
         vanityUrl: "https://firefly.edvsul.org"
