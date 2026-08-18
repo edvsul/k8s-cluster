@@ -23,6 +23,10 @@ spec:
     firefly-db:
       enabled: false
     firefly-iii:
+      image:
+        # Chart 0.10.2 defaults to appVersion 6.5.9, but data-importer 2.3.x
+        # requires Firefly III 6.6.0 or later.
+        tag: "version-6.6.0"
       config:
         env:
           DB_HOST: firefly-iii-db
@@ -60,7 +64,7 @@ spec:
     importer:
       enabled: true
       image:
-        tag: "version-2.3.4"
+        tag: "version-2.3.4" # Bump the version for the fix
       fireflyiii:
         url: "http://firefly-iii:80"
         vanityUrl: "https://firefly.edvsul.org"
