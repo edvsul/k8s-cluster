@@ -65,6 +65,7 @@ spec:
       config:
         env:
           TZ: "Europe/Copenhagen"
+          APP_URL: "https://firefly-import.edvsul.org"
         existingSecret: firefly-iii-importer-config
       podSecurityContext:
         runAsUser: 33
