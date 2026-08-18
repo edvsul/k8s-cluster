@@ -68,6 +68,8 @@ spec:
       fireflyiii:
         url: "http://firefly-iii:80"
         vanityUrl: "https://firefly.edvsul.org"
+        auth:
+          existingSecret: firefly-iii-importer-auth # PAT, avoids the OAuth client flow
       config:
         env:
           TZ: "Europe/Copenhagen"
