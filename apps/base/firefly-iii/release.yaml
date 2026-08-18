@@ -26,7 +26,7 @@ spec:
       image:
         # Chart 0.10.2 defaults to appVersion 6.5.9, but data-importer 2.3.x
         # requires Firefly III 6.6.0 or later.
-        tag: "version-6.6.0"
+        tag: "version-6.6.6"
       config:
         env:
           DB_HOST: firefly-iii-db
