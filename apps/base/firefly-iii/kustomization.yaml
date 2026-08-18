@@ -6,6 +6,7 @@ resources:
   - repository.yaml
   - secrets.yaml
   - tls-secret.yaml
+  - network-policy.yaml
   - statefulset.yaml
   - service.yaml
   - release.yaml

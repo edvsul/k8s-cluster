@@ -6,6 +6,13 @@
 *.key
 age.agekey
 
+# Decrypted sops working files and database dumps — never commit
+*-plain.yaml
+*-plaintext.yaml
+*.decrypted.yaml
+*.sql
+*.dump
+
 # Terraform
 **/.terraform/
 *.tfstate

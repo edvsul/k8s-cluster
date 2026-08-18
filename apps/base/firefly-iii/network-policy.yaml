@@ -1,0 +1,131 @@
+### Default-deny for the firefly-iii namespace.
+# Selecting an endpoint with an ingress block makes ingress default-deny for it;
+# the same applies to egress. Everything not listed below is dropped.
+#
+# Deliberately no toFQDNs rules: they engage Cilium's L7 DNS proxy, which has
+# previously left stale BPF state on this cluster that only a node reboot cleared.
+# Outbound HTTPS is therefore scoped by port to reserved:world instead of by name.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: firefly-iii-app
+  namespace: firefly-iii
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: firefly-iii
+      app.kubernetes.io/instance: firefly-iii
+  ingress:
+    # Browser traffic: arrives via the Cilium ingress Envoy (reserved:ingress).
+    # reserved:host covers the kubelet liveness/readiness probes.
+    - fromEntities:
+        - ingress
+        - host
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # The data importer talks to the API over the in-cluster service.
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: importer
+            app.kubernetes.io/instance: firefly-iii
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            app: firefly-iii-db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: firefly-iii-importer
+  namespace: firefly-iii
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: importer
+      app.kubernetes.io/instance: firefly-iii
+  ingress:
+    - fromEntities:
+        - ingress
+        - host
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: firefly-iii
+            app.kubernetes.io/instance: firefly-iii
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # api.enablebanking.com, plus the bank consent redirects it follows.
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: firefly-iii-db
+  namespace: firefly-iii
+spec:
+  endpointSelector:
+    matchLabels:
+      app: firefly-iii-db
+  ingress:
+    # Only the Firefly III pod. Its wait-for-db init container shares the pod
+    # identity, so it is covered by this same rule. The importer has no DB access.
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: firefly-iii
+            app.kubernetes.io/instance: firefly-iii
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
