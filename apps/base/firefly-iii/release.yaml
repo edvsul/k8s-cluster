@@ -73,6 +73,7 @@ spec:
       config:
         env:
           TZ: "Europe/Copenhagen"
+          ENABLE_EXCHANGE_RATES: "true"
         existingSecret: firefly-iii-importer-config
       podSecurityContext:
         runAsUser: 33
