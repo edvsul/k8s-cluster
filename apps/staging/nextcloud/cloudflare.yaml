@@ -25,7 +25,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - image: cloudflare/cloudflared:2026.7.3
+        - image: cloudflare/cloudflared:2026.8.3
           name: cloudflared
           command:
             # Configures tunnel run parameters
