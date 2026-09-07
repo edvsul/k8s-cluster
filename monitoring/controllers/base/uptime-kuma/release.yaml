@@ -6,6 +6,9 @@ metadata:
 spec:
   interval: 15m
   timeout: 5m
+  dependsOn:
+    - name: kube-prometheus-stack
+      namespace: monitoring
   chart:
     spec:
       chart: uptime-kuma
@@ -13,5 +16,6 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: uptime-kuma
+        namespace: monitoring
       interval: 5m
   releaseName: uptime-kuma
