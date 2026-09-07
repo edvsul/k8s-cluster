@@ -90,6 +90,7 @@ volumes between them and ships backups off-site to AWS S3.
 - **Grafana**: https://grafana.edvsul.org (requires Tailscale VPN)
 - **Longhorn**: https://longhorn.edvsul.org (requires Tailscale VPN)
 - **Hubble UI**: https://hubble.edvsul.org (requires Tailscale VPN)
+- **Firefly III**: https://firefly.edvsul.org (requires Tailscale VPN)
 
 ## How Traffic Reaches Applications
 
@@ -128,12 +129,12 @@ Client → 10.0.0.240 (Cilium LoadBalancer VIP, L2-announced by one node)
        → backend ClusterIP Service → app pod
 ```
 
-1. `*.edvsul.org` (hubble/grafana/longhorn) resolve to **`10.0.0.240`**, a Cilium
+1. `*.edvsul.org` (hubble/grafana/longhorn/firefly) resolve to **`10.0.0.240`**, a Cilium
    `LoadBalancer` IP allocated from the `lan-pool` (`10.0.0.240–250`).
 2. `10.0.0.240` is not bound to any NIC — Cilium **L2-announces** it (policy
    `lan-l2`): one node holds a lease and answers ARP for it on the LAN NIC (`eno1`).
 3. Cilium's eBPF datapath redirects the connection to the node-local **Envoy**
-   proxy. In `shared` mode a single Envoy/ingress config serves all three hosts.
+   proxy. In `shared` mode a single Envoy/ingress config serves all these hosts.
 4. Envoy terminates TLS with the `*.edvsul.org` wildcard certificate
    (issued by cert-manager, synced into the `cilium-secrets` namespace) and routes
    by `Host` header to the matching backend ClusterIP Service.
