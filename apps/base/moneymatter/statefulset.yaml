@@ -24,7 +24,7 @@ spec:
       - name: postgres
         # Postgres 16-alpine. Upstream's self-hosting compose pins postgres:16, so
         # the app's migrations are only tested against this major.
-        image: postgres:16-alpine@sha256:44c4ee9810eff91f7eab4d822642e01115b1a9eccce4bcbdde7604752d68eac6
+        image: postgres:18-alpine@sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2
         ports:
         - containerPort: 5432
         envFrom:
