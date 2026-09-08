@@ -19,3 +19,8 @@ spec:
         namespace: monitoring
       interval: 5m
   releaseName: uptime-kuma
+  values:
+    ingress:
+      enabled: true
+      hosts:
+        - host: uptime.edvsul.org
