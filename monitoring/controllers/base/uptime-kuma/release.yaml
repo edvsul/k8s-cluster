@@ -24,3 +24,7 @@ spec:
       enabled: true
       hosts:
         - host: uptime.edvsul.org
+      tls:
+      - secretName: staging-edvsul.org
+        hosts:
+          - uptime.edvsul.org
