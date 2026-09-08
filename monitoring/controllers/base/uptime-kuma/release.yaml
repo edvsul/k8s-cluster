@@ -24,6 +24,9 @@ spec:
       enabled: true
       hosts:
         - host: uptime.edvsul.org
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
       tls:
       - secretName: staging-edvsul.org
         hosts:
