@@ -53,7 +53,7 @@ spec:
               - ALL
       containers:
       - name: backend
-        image: letehaha/budget-tracker-be:latest@sha256:d15f5d1538528d680f6bcfa6659168d7a2e31835526eaa8aaa6a82771a65b94f
+        image: letehaha/budget-tracker-be:latest@sha256:e52e9cc8f1aada84eae0322e7600deb423a14b1410bd8758726ab9cb080a7161
         ports:
         - containerPort: 8081
         env:
