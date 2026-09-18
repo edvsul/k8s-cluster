@@ -114,7 +114,7 @@ spec:
                 path: /spec/template/spec/initContainers
                 value:
                   - name: wait-for-db
-                    image: postgres:18-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
+                    image: postgres:18-alpine@sha256:650d7a867dc5336eff67802a1417fcc801821d73d824c608e80afbde792fe6e1
                     command:
                       - sh
                       - -c
