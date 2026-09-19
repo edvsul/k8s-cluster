@@ -142,7 +142,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: frontend
-        image: letehaha/budget-tracker-fe:latest@sha256:976ef9dd72877cf8d093dea619b22cef47eb4e7bf988ebe963d5d314eae56e53
+        image: letehaha/budget-tracker-fe:latest@sha256:5111c9899a94204c0d22508a8669c8cac7c67052d4e6766be7376419c601ef0e
         ports:
         - containerPort: 80
         env:
