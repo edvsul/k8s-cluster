@@ -22,8 +22,8 @@ volumes between them and ships backups off-site to AWS S3.
 
 | Role | IP | Model | CPU | RAM | OS |
 |------|-----|-------|-----|-----|-----|
-| Control plane | 10.0.0.78 | Dell OptiPlex 9020 | i3-4150, 4 cores | 8 GB | Ubuntu Server 24.04 LTS |
-| Worker | 10.0.0.77 | Dell OptiPlex 7010 | i3-3240, 4 cores | 8 GB | Ubuntu Server 24.04 LTS |
+| Control plane | 10.0.0.78 | Dell OptiPlex 9020 | i3-4150, 4 cores | 8 GB | Ubuntu Server 26.04 LTS |
+| Worker | 10.0.0.77 | Dell OptiPlex 7010 | i3-3240, 4 cores | 8 GB | Ubuntu Server 26.04 LTS |
 | Worker | 10.0.0.76 | HP EliteDesk 800 G1 TWR | i5-4570, 4 cores | 16 GB | Ubuntu Server 26.04 LTS |
 | Worker | 10.0.0.75 | HP EliteDesk 800 G1 TWR | i5-4570, 4 cores | 16 GB | Ubuntu Server 26.04 LTS |
 
