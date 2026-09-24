@@ -91,6 +91,7 @@ volumes between them and ships backups off-site to AWS S3.
 - **Longhorn**: https://longhorn.edvsul.org (requires Tailscale VPN)
 - **Hubble UI**: https://hubble.edvsul.org (requires Tailscale VPN)
 - **Firefly III**: https://firefly.edvsul.org (requires Tailscale VPN)
+- **Uptime Kuma**: https://uptime.edvsul.org (requires Tailscale VPN)
 
 ## How Traffic Reaches Applications
 
