@@ -90,7 +90,7 @@ spec:
       containers:
       - name: redis
         # redis 7-alpine
-        image: redis:7-alpine@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+        image: redis:7-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
         ports:
         - containerPort: 6379
         volumeMounts:
