@@ -25,7 +25,7 @@ spec:
       # relies on CrashLoopBackOff to retry. Gate it explicitly instead.
       initContainers:
       - name: wait-for-deps
-        image: postgres:16-alpine@sha256:44c4ee9810eff91f7eab4d822642e01115b1a9eccce4bcbdde7604752d68eac6
+        image: postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
         command:
         - sh
         - -c
