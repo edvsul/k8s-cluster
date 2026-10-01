@@ -16,9 +16,24 @@ feature.
 | `~/.claude/chaos-lab/deck.md` | The fault deck. Contains every answer. |
 | `~/.claude/chaos-lab/ledger.md` | Active fault, history, scores. |
 | `~/.claude/chaos-lab/baseline.md` | Healthy-state fingerprint. |
+| `~/.claude/chaos-lab/chaos.sh` | Generic driver: `inject <tier>`, `status`, `hint`, `answer`, `revert`, `selftest`. |
 
 Read `deck.md` **only** to inject, hint, check, reveal or fix — never to answer a general question,
 and never speculatively "to be helpful".
+
+## No-spoiler protocol
+
+The user sees every tool call and its output — including subagents' calls (subagents hide
+nothing). So during an active fault, no tool input or output may contain fault-specific text:
+
+- **break:** run only `~/.claude/chaos-lab/chaos.sh inject <tier>`. It picks the fault, writes
+  `.active` + `.revert.sh` before injecting, runs it silently and prints `Injected. Tier N. Go.`
+  Never Write an inject script, Read `.active`/`deck.md`, or run verification kubectl calls.
+- **hint:** run `chaos.sh hint` — it prints only the next level and bumps the counter.
+- **check:** run `chaos.sh answer` (tool output is collapsed; unavoidable).
+- **fix:** archive evidence, then `chaos.sh revert`; only then update `ledger.md` and the deck
+  entry's status line.
+- Unplayable/burned IDs live in the script's `SKIP` list, not in deck edits.
 
 **The three state files deliberately live outside this repo and must stay there.** This repo is
 public, and `deck.md` is a spoiler file — committing it would both ruin the game permanently and
