@@ -43,6 +43,7 @@ spec:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+      replicaCount: 2
       securityContext:
         allowPrivilegeEscalation: false
         capabilities:
