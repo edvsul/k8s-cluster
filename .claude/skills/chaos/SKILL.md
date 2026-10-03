@@ -33,6 +33,9 @@ nothing). So during an active fault, no tool input or output may contain fault-s
 - **check:** run `chaos.sh answer` (tool output is collapsed; unavoidable).
 - **fix:** archive evidence, then `chaos.sh revert`; only then update `ledger.md` and the deck
   entry's status line.
+- **pause** (user wants to stop and retry the same fault later): `chaos.sh pause` reverts silently
+  and queues the fault in `.replay`; the next `chaos.sh inject <tier>` replays it. Don't update the
+  ledger or deck for a paused round.
 - Unplayable/burned IDs live in the script's `SKIP` list, not in deck edits.
 
 **The three state files deliberately live outside this repo and must stay there.** This repo is
