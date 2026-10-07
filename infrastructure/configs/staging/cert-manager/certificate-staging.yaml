@@ -10,7 +10,7 @@ spec:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
       reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: ".*"
       reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "longhorn-system,kube-system,monitoring,cilium-secrets,moneymatter"
+      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "longhorn-system,kube-system,monitoring"
   issuerRef:
     name: staging-letsencrypt
     kind: ClusterIssuer
