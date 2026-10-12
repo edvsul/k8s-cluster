@@ -1,0 +1,23 @@
+machine:
+  network:
+    hostname: control-plane
+    nameservers:
+      - 8.8.8.8
+      - 1.1.1.1
+    interfaces:
+      - deviceSelector:
+          physical: true
+        dhcp: false
+        addresses:
+          - 10.0.0.81/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: ResolverConfig
+$patch: delete
