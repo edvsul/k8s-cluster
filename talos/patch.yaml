@@ -1,9 +1,5 @@
 machine:
   network:
-    hostname: control-plane
-    nameservers:
-      - 8.8.8.8
-      - 1.1.1.1
     interfaces:
       - deviceSelector:
           physical: true
@@ -16,8 +12,19 @@ machine:
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
-$patch: delete
+auto: off
+hostname: control-plane
 ---
 apiVersion: v1alpha1
 kind: ResolverConfig
+nameservers:
+  - address: 8.8.8.8
+  - address: 1.1.1.1
+---
+apiVersion: v1alpha1
+kind: KubeFlannelCNIConfig
 $patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
