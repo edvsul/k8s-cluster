@@ -1,0 +1,23 @@
+# LB pool + L2 policy from ansible/playbooks/install_cilium.yaml.
+# Pilot range 10.0.0.230-235; widen to 10.0.0.240-250 after the k3s nodes are wiped.
+# Apply after the Cilium CRDs exist:
+#   kubectl --kubeconfig talos/kubeconfig apply -f talos/cilium-lb.yaml
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lan-pool
+spec:
+  blocks:
+    - start: "10.0.0.230"
+      stop: "10.0.0.235"
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: lan-l2
+spec:
+  externalIPs: true
+  loadBalancerIPs: true
+  nodeSelector:
+    matchLabels:
+      kubernetes.io/os: linux

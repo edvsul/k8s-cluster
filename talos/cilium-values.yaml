@@ -1,0 +1,73 @@
+# Cilium values for the Talos cluster.
+# Ported from ansible/playbooks/install_cilium.yaml — everything below the
+# "Same as k3s" line is identical to the playbook; only the Talos block differs.
+# Install (from the workstation, not the node):
+#   helm upgrade cilium cilium/cilium --install --version 1.20.0 \
+#     --namespace kube-system --kubeconfig talos/kubeconfig -f talos/cilium-values.yaml
+
+# --- Talos-specific -----------------------------------------------------------
+# KubePrism: node-local API proxy Talos runs on every node (KubePrismConfig port 7445).
+# Replaces the playbook's k8sServiceHost: <k3s server IP>.
+k8sServiceHost: localhost
+k8sServicePort: 7445
+
+# Talos mounts cgroup2 itself and has a read-only rootfs.
+cgroup:
+  autoMount:
+    enabled: false
+  hostRoot: /sys/fs/cgroup
+
+# Chart default minus SYS_MODULE: Talos forbids loading kernel modules from pods.
+securityContext:
+  capabilities:
+    ciliumAgent: [CHOWN, KILL, NET_ADMIN, NET_RAW, IPC_LOCK, SYS_ADMIN, SYS_RESOURCE, DAC_OVERRIDE, FOWNER, SETGID, SETUID, SYSLOG]
+    cleanCiliumState: [NET_ADMIN, SYS_ADMIN, SYS_RESOURCE]
+
+# --- Same as k3s --------------------------------------------------------------
+operator:
+  replicas: 1
+  rollOutPods: true
+rollOutCiliumPods: true
+hubble:
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+    ingress:
+      enabled: true
+      hosts:
+        - hubble.edvsul.org
+      tls:
+        - secretName: staging-edvsul.org
+          hosts:
+            - hubble.edvsul.org
+  metrics:
+    enabled:
+      - dns
+      - drop
+      - tcp
+      - flow
+      - icmp
+      - http
+kubeProxyReplacement: true   # Talos kube-proxy is disabled in talos/patch.yaml
+ipam:
+  operator:
+    # Must be set: the chart default (10.0.0.0/8) overlaps the LAN.
+    clusterPoolIPv4PodCIDRList: "10.42.0.0/16"
+# Restrict Cilium to the physical LAN NIC(s); Talos names it eno1 on this node.
+devices: "eno+"
+socketLB:
+  enabled: true
+  hostNamespaceOnly: true
+ingressController:
+  enabled: true
+  default: true
+  loadbalancerMode: shared
+  service:
+    annotations:
+      # Pilot range while k3s still owns 10.0.0.240-250; switch to .240 at cutover.
+      io.cilium/lb-ipam-ips: "10.0.0.230"
+l2announcements:
+  enabled: true
+externalIPs:
+  enabled: true
