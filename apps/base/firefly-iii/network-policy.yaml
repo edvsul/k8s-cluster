@@ -71,6 +71,15 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
+    # The monthly autoimport CronJob triggers /autoimport over the service.
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: autoimport
+            app.kubernetes.io/instance: firefly-iii
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
   egress:
     - toEndpoints:
         - matchLabels:
@@ -128,4 +137,37 @@ spec:
             - port: "53"
               protocol: UDP
             - port: "53"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: firefly-iii-autoimport
+  namespace: firefly-iii
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: autoimport
+      app.kubernetes.io/instance: firefly-iii
+  # Nothing connects to the job; an empty rule makes ingress default-deny.
+  ingress:
+    - {}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: importer
+            app.kubernetes.io/instance: firefly-iii
+      toPorts:
+        - ports:
+            - port: "8080"
               protocol: TCP

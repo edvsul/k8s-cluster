@@ -10,3 +10,4 @@ resources:
   - statefulset.yaml
   - service.yaml
   - release.yaml
+  - cronjob.yaml
