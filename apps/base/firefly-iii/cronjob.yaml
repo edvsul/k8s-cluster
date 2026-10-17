@@ -1,6 +1,6 @@
 ### Monthly bank import through the data importer's /autoimport endpoint.
 # Imports every config in the importer's /import directory (one per bank account,
-# see autoimport-secret.yaml). Runs on the 1st so the last day of the previous
+# see firefly-iii-importer-autoimport in secrets.yaml). Runs on the 1st so the last day of the previous
 # month is complete; each config uses a relative 1 month range, and duplicate
 # detection skips anything already imported.
 apiVersion: batch/v1
