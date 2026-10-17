@@ -81,6 +81,7 @@ spec:
           TZ: "Europe/Copenhagen"
           CAN_POST_AUTOIMPORT: "true"
           IMPORT_DIR_ALLOWLIST: "/import"
+          PHP_MAX_EXECUTION_TIME: "1800"
         envValueFrom:
           AUTO_IMPORT_SECRET:
             secretKeyRef:
