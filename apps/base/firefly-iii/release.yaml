@@ -19,6 +19,11 @@ spec:
       name: firefly-iii-app-key-value
       valuesKey: appKey
       targetPath: firefly-iii.secrets.appKey
+    # importer.config.files: one Enable Banking import config per bank account,
+    # mounted at /import for the monthly autoimport CronJob.
+    - kind: Secret
+      name: firefly-iii-importer-autoimport
+      valuesKey: values.yaml
   values:
     firefly-db:
       enabled: false
@@ -74,6 +79,13 @@ spec:
       config:
         env:
           TZ: "Europe/Copenhagen"
+          CAN_POST_AUTOIMPORT: "true"
+          IMPORT_DIR_ALLOWLIST: "/import"
+        envValueFrom:
+          AUTO_IMPORT_SECRET:
+            secretKeyRef:
+              name: firefly-iii-importer-autoimport
+              key: AUTO_IMPORT_SECRET
         existingSecret: firefly-iii-importer-config
       podSecurityContext:
         runAsUser: 33
