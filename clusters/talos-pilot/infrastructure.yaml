@@ -1,0 +1,82 @@
+# TEMPORARY — pilot overlay for the Talos cluster, deleted at cutover (docs/talos-migration.md §5).
+# Same Kustomization names and paths as clusters/staging/infrastructure.yaml, so re-pointing Flux to
+# ./clusters/staging later updates these objects in place instead of pruning and recreating them.
+# The patches drop everything that must not run in two clusters on the same LAN at once.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infrastructure-controllers
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/controllers/staging
+  prune: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+  patches:
+    # Would register a duplicate tailnet device next to the k3s one
+    - patch: |
+        $patch: delete
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: tailscale-operator
+          namespace: kube-system
+    # Would open duplicate PRs
+    - patch: |
+        $patch: delete
+        apiVersion: batch/v1
+        kind: CronJob
+        metadata:
+          name: renovate
+          namespace: renovate
+    # Talos 1.14 has no kubelet extraMounts; Longhorn data lives on the UserVolumeConfig from
+    # talos/patch.yaml. Move this into infrastructure/controllers/base/longhorn at cutover.
+    - patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: longhorn-release
+          namespace: longhorn-system
+        spec:
+          values:
+            defaultSettings:
+              defaultDataPath: /var/mnt/longhorn
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infrastructure-configs
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/configs/staging
+  prune: true
+  patches:
+    # Needs the tailscale operator dropped above; would also advertise 10.0.0.240/28 twice
+    - patch: |
+        $patch: delete
+        apiVersion: tailscale.com/v1alpha1
+        kind: Connector
+        metadata:
+          name: home-subnet-router
+    # Both clusters share the S3 backup target; only k3s may write scheduled backups
+    - patch: |
+        $patch: delete
+        apiVersion: longhorn.io/v1beta2
+        kind: RecurringJob
+        metadata:
+          name: default
+          namespace: longhorn-system

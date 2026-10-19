@@ -1,0 +1,8 @@
+# Image Factory schematic — system extensions baked into the Talos image.
+# Get the ID with:
+#   curl -sX POST --data-binary @talos/schematic.yaml https://factory.talos.dev/schematics
+customization:
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/iscsi-tools       # Longhorn: iscsiadm / iscsid
+      - siderolabs/util-linux-tools  # Longhorn: nsenter, fstrim
