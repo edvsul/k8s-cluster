@@ -54,11 +54,3 @@ name: PodSecurity
 configuration:
   defaults:
     enforce: privileged
----
-# Pilot runs on a single node; restore the NoSchedule taint once workers join
-# (docs/talos-migration.md, Phase 3)
-apiVersion: v1alpha1
-kind: KubeNodeConfig
-taints:
-  node-role.kubernetes.io/control-plane:
-    $patch: delete
