@@ -1,20 +1,4 @@
-machine:
-  network:
-    interfaces:
-      - deviceSelector:
-          physical: true
-        dhcp: false
-        addresses:
-          - 10.0.0.81/24
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.0.0.1
----
-apiVersion: v1alpha1
-kind: HostnameConfig
-auto: off
-hostname: control-plane
----
+# Shared by every node. Static IP and hostname are per node: see control-plane.yaml and worker-1.yaml.
 apiVersion: v1alpha1
 kind: ResolverConfig
 nameservers:
@@ -24,10 +8,6 @@ nameservers:
 apiVersion: v1alpha1
 kind: KubeFlannelCNIConfig
 $patch: delete
----
-apiVersion: v1alpha1
-kind: KubeProxyConfig
-enabled: false
 ---
 # Schematic from talos/schematic.yaml (iscsi-tools + util-linux-tools for Longhorn)
 apiVersion: v1alpha1
@@ -44,13 +24,3 @@ apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: longhorn
 volumeType: directory
----
-# Match k3s (no PSA enforcement) so the existing infrastructure/ namespaces need no labels;
-# Kyverno stays the policy layer for app namespaces. Merges into Talos's default PodSecurity
-# config (audit/warn: restricted, kube-system exempt); only enforce changes from baseline.
-apiVersion: v1alpha1
-kind: KubeAdmissionControlConfig
-name: PodSecurity
-configuration:
-  defaults:
-    enforce: privileged

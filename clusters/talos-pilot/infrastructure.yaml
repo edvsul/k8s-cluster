@@ -38,7 +38,7 @@ spec:
           name: renovate
           namespace: renovate
     # Talos 1.14 has no kubelet extraMounts; Longhorn data lives on the UserVolumeConfig from
-    # talos/patch.yaml. Move this into infrastructure/controllers/base/longhorn at cutover.
+    # talos/patches/common.yaml. Move this into infrastructure/controllers/base/longhorn at cutover.
     - patch: |
         apiVersion: helm.toolkit.fluxcd.io/v2
         kind: HelmRelease
