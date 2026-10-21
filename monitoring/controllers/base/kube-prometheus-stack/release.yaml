@@ -44,6 +44,12 @@ spec:
         retention: 7d
         storageSpec:
           volumeClaimTemplate:
+            metadata:
+              labels:
+                # Opt out of the Longhorn "default" S3 backup group: PVC labels override the
+                # volume's, and "no-backup" has no RecurringJob attached.
+                recurring-job.longhorn.io/source: enabled
+                recurring-job-group.longhorn.io/no-backup: enabled
             spec:
               accessModes: [ReadWriteOnce]
               resources:
