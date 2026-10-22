@@ -5,6 +5,9 @@
 *.crt
 *.key
 age.agekey
+controlplane.yaml
+talosconfig
+worker.yaml
 
 # Decrypted sops working files and database dumps — never commit
 *-plain.yaml
