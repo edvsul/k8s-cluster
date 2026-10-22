@@ -1,0 +1,39 @@
+# Control plane, 10.0.0.81 (ex-k3s worker .77, OptiPlex 7010)
+machine:
+  network:
+    interfaces:
+      - deviceSelector:
+          physical: true
+        dhcp: false
+        addresses:
+          - 10.0.0.81/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+auto: off
+hostname: control-plane
+---
+# Cluster-wide settings below are only valid on control plane machines.
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
+---
+# Match k3s (no PSA enforcement) so the existing infrastructure/ namespaces need no labels;
+# Kyverno stays the policy layer for app namespaces. Merges into Talos's default PodSecurity
+# config (audit/warn: restricted, kube-system exempt); only enforce changes from baseline.
+apiVersion: v1alpha1
+kind: KubeAdmissionControlConfig
+name: PodSecurity
+configuration:
+  defaults:
+    enforce: privileged
+---
+# Pilot only: lets workloads schedule on the control plane. Drop at cutover (docs/talos-migration.md §7).
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+taints:
+  node-role.kubernetes.io/control-plane:
+    $patch: delete

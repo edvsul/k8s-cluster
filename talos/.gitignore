@@ -1,0 +1,7 @@
+# Talos credentials and generated machine configs: contain private keys and tokens
+talosconfig
+controlplane.yaml
+worker.yaml
+*kubeconfig*
+secrets.yaml
+clusterconfig/

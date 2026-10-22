@@ -1,0 +1,17 @@
+# Worker 1, 10.0.0.82 (ex-k3s worker .76, EliteDesk 16 GB)
+machine:
+  network:
+    interfaces:
+      - deviceSelector:
+          physical: true
+        dhcp: false
+        addresses:
+          - 10.0.0.82/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+auto: off
+hostname: worker-1
