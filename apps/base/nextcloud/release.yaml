@@ -94,7 +94,7 @@ spec:
     mariadb:
       enabled: true
       primary:
-        extraFlags: "--innodb_log_file_size=512M"
+        extraFlags: "--innodb_log_file_size=256M"
         persistence:
           enabled: true
           storageClass: longhorn-k8s-cluster
