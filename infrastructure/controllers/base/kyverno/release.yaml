@@ -20,8 +20,9 @@ spec:
     crds: CreateReplace
   values:
     upgrade:
-      fromV2: true                # Allows the upgrade to proceed to the v3 architecture
-      legacyPolicyCheck: false    # Prevents Helm from crashing if legacy policy types are found
+      allowLegacyPolicies: true
+      legacyPolicyCheck:
+        enabled: false
     admissionController:
       replicas: 2
     backgroundController:
