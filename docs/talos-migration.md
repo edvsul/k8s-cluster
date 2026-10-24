@@ -43,7 +43,7 @@ Longhorn on both clusters points at the same S3 bucket. That is what makes resto
 
 **k3s server flags.** `--flannel-backend=none`, `--disable-kube-proxy`, `--disable=traefik,servicelb` and the control-plane `NoSchedule` taint map to `cni: none`, `proxy.disabled: true`, nothing (Talos ships neither traefik nor servicelb) and Talos's default control-plane taint.
 
-**Node preparation playbooks.** Swap and firewalld don't exist on Talos. `multipathd` isn't present. The NFS client for Longhorn RWX (Nextcloud) is in the kernel. The inotify sysctls go into `machine.sysctls`, and the image GC thresholds into `machine.kubelet.extraConfig`. Longhorn's `iscsi-tools` and `util-linux-tools` come as system extensions baked into the image.
+**Node preparation playbooks.** Swap and firewalld don't exist on Talos. `multipathd` isn't present. The NFS client for Longhorn RWX (Nextcloud) is in the kernel. The inotify sysctls go into `machine.sysctls`, and the image GC thresholds into the `config` field of the `KubeletConfig` document (Talos 1.14 rejects the old `machine.kubelet.extraConfig` once that document exists). Longhorn's `iscsi-tools` and `util-linux-tools` come as system extensions baked into the image.
 
 **The backup credentials Secret.** The `longhorn-backup-s3` Secret is created by the existing Terraform via the kubernetes provider. Point it at the new cluster with `terraform apply -var kubeconfig_path=<talos kubeconfig>` and the provider recreates the Secret there. No code change is needed.
 
@@ -78,7 +78,8 @@ talosctl gen config talos-cluster https://10.0.0.81:6443 \
   --config-patch @talos/patches/common.yaml \
   --config-patch-control-plane @talos/patches/control-plane.yaml \
   --config-patch-worker @talos/patches/worker-1.yaml \
-  --output-dir talos --force
+  --output-types controlplane,worker \
+  --output-dir talos --force             # output-types: keep the existing talosconfig
 ```
 
 Still to add to the patches: the inotify sysctls and image-GC thresholds from §4, the Tailscale `ExtensionServiceConfig` and API server `certSANs`, and the control-plane metrics bind addresses.

@@ -1,4 +1,9 @@
-# Shared by every node. Static IP and hostname are per node: see control-plane.yaml and worker-1.yaml.
+apiVersion: v1alpha1
+kind: KubeletConfig
+config:
+  imageGCHighThresholdPercent: 70
+  imageGCLowThresholdPercent: 50
+---
 apiVersion: v1alpha1
 kind: ResolverConfig
 nameservers:
