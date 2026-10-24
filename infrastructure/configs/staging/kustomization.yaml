@@ -5,3 +5,4 @@ resources:
   - cert-manager
   - tailscale
   - longhorn
+  - kyverno-policies
