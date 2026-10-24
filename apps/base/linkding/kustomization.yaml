@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - deployment.yaml
   - statefulset.yaml
+  - networkPolicy.yaml
   - pvc.yaml
   - service.yaml
   - secrets.yaml
