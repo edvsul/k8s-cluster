@@ -1,5 +1,4 @@
 # LB pool + L2 policy from ansible/playbooks/install_cilium.yaml.
-# 10.0.0.240-250, the same range k3s used (the pilot ran on 10.0.0.230-235).
 # Apply after the Cilium CRDs exist:
 #   kubectl apply -f talos/cilium/cilium-lb.yaml
 apiVersion: cilium.io/v2alpha1
