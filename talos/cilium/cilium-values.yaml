@@ -65,8 +65,8 @@ ingressController:
   loadbalancerMode: shared
   service:
     annotations:
-      # Pilot range while k3s still owns 10.0.0.240-250; switch to .240 at cutover.
-      io.cilium/lb-ipam-ips: "10.0.0.230"
+      # Same VIP as on k3s: DNS for the VPN-only hosts and the Tailscale Connector route point here.
+      io.cilium/lb-ipam-ips: "10.0.0.240"
 l2announcements:
   enabled: true
 externalIPs:
