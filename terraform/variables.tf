@@ -25,7 +25,7 @@ variable "environment" {
 variable "kubeconfig_path" {
   description = "Path to the kubeconfig file used to connect to the cluster"
   type        = string
-  default     = "../../config"
+  default     = "../../kubeconfig"
 }
 
 variable "kubeconfig_context" {
