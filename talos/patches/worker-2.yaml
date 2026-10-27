@@ -1,4 +1,4 @@
-# Worker 2, 10.0.0.83
+# Worker 2, 10.0.0.83 (ex-k3s worker .75, EliteDesk 16 GB)
 machine:
   network:
     interfaces:

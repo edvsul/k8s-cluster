@@ -1,4 +1,4 @@
-# Worker 1, 10.0.0.84 (ex-k3s worker .77)
+# Worker 3, 10.0.0.84 (ex-k3s master .78, OptiPlex 9020)
 machine:
   network:
     interfaces:
