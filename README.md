@@ -8,7 +8,7 @@ router. The three workers contribute local disk to Longhorn, which replicates
 volumes between them and ships backups off-site to AWS S3. The control plane is
 tainted, so it runs no workloads and holds no Longhorn replicas.
 
-![Homelab cluster topology: four nodes on a 10.0.0.0/24 LAN, with Longhorn volumes on the three workers backed up to AWS S3](docs/images/cluster-topology.png)
+![Homelab cluster topology: master 10.0.0.81 and workers 10.0.0.82-84 on a 10.0.0.0/24 LAN, a bastion connected to the control-plane, and Longhorn volumes on the three workers backed up to AWS S3](docs/images/cluster-topology.png)
 
 ## Infrastructure Specifications
 
