@@ -30,10 +30,3 @@ name: PodSecurity
 configuration:
   defaults:
     enforce: privileged
----
-# Pilot only: lets workloads schedule on the control plane. Drop at cutover (docs/talos-migration.md §7).
-apiVersion: v1alpha1
-kind: KubeNodeConfig
-taints:
-  node-role.kubernetes.io/control-plane:
-    $patch: delete

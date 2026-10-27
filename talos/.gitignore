@@ -2,6 +2,7 @@
 talosconfig
 controlplane.yaml
 worker.yaml
+/worker-*.yaml
 *kubeconfig*
 secrets.yaml
 clusterconfig/
