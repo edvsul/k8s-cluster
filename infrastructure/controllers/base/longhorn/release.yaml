@@ -27,4 +27,3 @@ spec:
     defaultSettings:
       defaultDataPath: /var/mnt/longhorn
       concurrentAutomaticEngineUpgradePerNodeLimit: 1
-      storageOverProvisioningPercentage: "500"
