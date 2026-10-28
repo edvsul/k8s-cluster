@@ -30,6 +30,30 @@ resource "aws_s3_bucket_versioning" "longhorn" {
   }
 }
 
+# Longhorn prunes old backup blocks itself (RecurringJob retain); with versioning
+# those deletes only add delete markers, so expire the noncurrent versions.
+resource "aws_s3_bucket_lifecycle_configuration" "longhorn" {
+  bucket = aws_s3_bucket.longhorn.id
+
+  # Versioning must be enabled before noncurrent-version rules apply
+  depends_on = [aws_s3_bucket_versioning.longhorn]
+
+  rule {
+    id     = "expire-noncurrent"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = var.noncurrent_version_expiration_days
+    }
+
+    expiration {
+      expired_object_delete_marker = true
+    }
+  }
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "longhorn" {
   bucket = aws_s3_bucket.longhorn.id
 

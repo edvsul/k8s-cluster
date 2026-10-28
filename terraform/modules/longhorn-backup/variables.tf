@@ -26,3 +26,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "noncurrent_version_expiration_days" {
+  description = "Days to keep noncurrent object versions (blocks Longhorn deleted) before S3 expires them"
+  type        = number
+  default     = 7
+}
