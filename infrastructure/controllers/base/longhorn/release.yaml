@@ -27,3 +27,5 @@ spec:
     defaultSettings:
       defaultDataPath: /var/mnt/longhorn
       concurrentAutomaticEngineUpgradePerNodeLimit: 1
+    persistence:
+      defaultClassReplicaCount: 2
