@@ -30,6 +30,4 @@ spec:
     cleanupController:
       replicas: 2
     reportsController:
-      resources:
-        limits:
-          memory: 512Mi
+      enabled: false
