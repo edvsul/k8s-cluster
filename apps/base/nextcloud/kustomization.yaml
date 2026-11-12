@@ -6,3 +6,4 @@ resources:
   - release.yaml
   - secrets.yaml
   - pdb.yaml
+  - apache-headers.yaml

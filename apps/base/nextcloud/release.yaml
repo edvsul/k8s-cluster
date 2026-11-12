@@ -65,6 +65,14 @@ spec:
       - name: php-confd
         mountPath: "/usr/local/etc/php/conf.d/redis-session.ini"
         subPath: redis-session.ini
+      - name: apache-headers
+        mountPath: /etc/apache2/conf-enabled/security-headers.conf
+        subPath: security-headers.conf
+        readOnly: true
+      extraVolumes:
+      - name: apache-headers
+        configMap:
+          name: nextcloud-apache-headers
     persistence:
       enabled: true
       accessMode: ReadWriteMany

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-apache-headers
+  namespace: nextcloud
+data:
+  # Apache (apache flavor) doesn't get the chart's nginx.config.headers, and cloudflared
+  # can't add response headers, so set HSTS here. mod_headers is enabled in the official image.
+  security-headers.conf: |
+    <IfModule mod_headers.c>
+      Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"
+    </IfModule>
