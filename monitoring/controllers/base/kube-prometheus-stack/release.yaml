@@ -55,3 +55,63 @@ spec:
               resources:
                 requests:
                   storage: 10Gi
+    alertmanager:
+      alertmanagerSpec:
+        # Mount the secret containing your Slack webhook URL
+        secrets:
+          - alertmanager-slack-secret
+
+      config:
+        global:
+          # Reference the mounted secret file instead of hardcoding the URL
+          slack_api_url_file: '/etc/alertmanager/secrets/alertmanager-slack-secret/slack_api_url'
+
+        route:
+          group_by: ['namespace', 'alertname']
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 3h
+          receiver: 'slack-alerts'
+          routes:
+            # Silence the default Watchdog heartbeat alert so it doesn't spam Slack
+            - matchers:
+                - name: alertname
+                  value: Watchdog
+              receiver: 'null'
+            # Route pod restart alerts directly to Slack
+            - matchers:
+                - name: alertname
+                  value: KubePodCrashLoopingOrRestarting
+              receiver: 'slack-alerts'
+
+        receivers:
+          - name: 'null'
+          - name: 'slack-alerts'
+            slack_configs:
+              - channel: '#alert'
+                send_resolved: true
+                title: '{{ if eq .Status "firing" }}:rotating_light: FIRING{{ else }}:white_check_mark: RESOLVED{{ end }} - {{ .CommonLabels.alertname }}'
+                text: >-
+                  {{ range .Alerts }}
+                  *Namespace:* `{{ .Labels.namespace }}`
+                  *Pod:* `{{ .Labels.pod }}`
+                  *Container:* `{{ .Labels.container }}`
+                  *Summary:* {{ .Annotations.summary }}
+                  *Details:* {{ .Annotations.description }}
+                  {{ end }}
+
+    # Add custom PrometheusRule to detect pod restarts
+    additionalPrometheusRulesMap:
+      custom-pod-rules:
+        groups:
+          - name: pod-restart-alerts
+            rules:
+              - alert: KubePodCrashLoopingOrRestarting
+                expr: increase(kube_pod_container_status_restarts_total[15m]) > 2
+                for: 2m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is restarting frequently"
+                  description: "Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has restarted more than 2 times in the last 15 minutes."
+
