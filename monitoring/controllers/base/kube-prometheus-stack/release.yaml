@@ -93,8 +93,8 @@ spec:
                   *Namespace:* '{{ .Labels.namespace }}'
                   *Pod:* '{{ .Labels.pod }}'
                   *Container:* '{{ .Labels.container }}'
-                  *Summary:* {{ .Annotations.summary }}
-                  *Details:* {{ .Annotations.description }}
+                  *Summary:* '{{ .Annotations.summary }}'
+                  *Details:* '{{ .Annotations.description }}'
                   {{ end }}
     # Add custom PrometheusRule to detect pod restarts
     additionalPrometheusRulesMap:
