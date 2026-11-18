@@ -73,13 +73,11 @@ spec:
           routes:
             # Silence the default Watchdog heartbeat alert so it doesn't spam Slack
             - matchers:
-                - name: alertname
-                  value: Watchdog
+                - alertname = "Watchdog"
               receiver: 'null'
             # Route pod restart alerts directly to Slack
             - matchers:
-                - name: alertname
-                  value: KubePodCrashLoopingOrRestarting
+                - alertname = "KubePodCrashLoopingOrRestarting"
               receiver: 'slack-alerts'
         receivers:
           - name: 'null'
@@ -90,11 +88,11 @@ spec:
                 title: '{{ if eq .Status "firing" }}:rotating_light: FIRING{{ else }}:white_check_mark: RESOLVED{{ end }} - {{ .CommonLabels.alertname }}'
                 text: >-
                   {{ range .Alerts }}
-                  *Namespace:* '{{ .Labels.namespace }}'
-                  *Pod:* '{{ .Labels.pod }}'
-                  *Container:* '{{ .Labels.container }}'
-                  *Summary:* '{{ .Annotations.summary }}'
-                  *Details:* '{{ .Annotations.description }}'
+                  *Namespace:* {{ .Labels.namespace }}
+                  *Pod:* {{ .Labels.pod }}
+                  *Container:* {{ .Labels.container }}
+                  *Summary:* {{ .Annotations.summary }}
+                  *Details:* {{ .Annotations.description }}
                   {{ end }}
     # Add custom PrometheusRule to detect pod restarts
     additionalPrometheusRulesMap:
@@ -110,4 +108,3 @@ spec:
                 annotations:
                   summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is restarting frequently"
                   description: "Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has restarted more than 2 times in the last 15 minutes."
-
