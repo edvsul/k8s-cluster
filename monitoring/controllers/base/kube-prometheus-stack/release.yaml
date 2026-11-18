@@ -60,12 +60,10 @@ spec:
         # Mount the secret containing your Slack webhook URL
         secrets:
           - alertmanager-slack-secret
-
       config:
         global:
           # Reference the mounted secret file instead of hardcoding the URL
           slack_api_url_file: '/etc/alertmanager/secrets/alertmanager-slack-secret/slack_api_url'
-
         route:
           group_by: ['namespace', 'alertname']
           group_wait: 30s
@@ -83,7 +81,6 @@ spec:
                 - name: alertname
                   value: KubePodCrashLoopingOrRestarting
               receiver: 'slack-alerts'
-
         receivers:
           - name: 'null'
           - name: 'slack-alerts'
@@ -99,7 +96,6 @@ spec:
                   *Summary:* {{ .Annotations.summary }}
                   *Details:* {{ .Annotations.description }}
                   {{ end }}
-
     # Add custom PrometheusRule to detect pod restarts
     additionalPrometheusRulesMap:
       custom-pod-rules:
