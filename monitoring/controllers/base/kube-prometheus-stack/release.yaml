@@ -90,9 +90,9 @@ spec:
                 title: '{{ if eq .Status "firing" }}:rotating_light: FIRING{{ else }}:white_check_mark: RESOLVED{{ end }} - {{ .CommonLabels.alertname }}'
                 text: >-
                   {{ range .Alerts }}
-                  *Namespace:* `{{ .Labels.namespace }}`
-                  *Pod:* `{{ .Labels.pod }}`
-                  *Container:* `{{ .Labels.container }}`
+                  *Namespace:* '{{ .Labels.namespace }}'
+                  *Pod:* '{{ .Labels.pod }}'
+                  *Container:* '{{ .Labels.container }}'
                   *Summary:* {{ .Annotations.summary }}
                   *Details:* {{ .Annotations.description }}
                   {{ end }}
