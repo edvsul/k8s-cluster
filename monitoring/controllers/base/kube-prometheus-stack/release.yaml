@@ -55,6 +55,9 @@ spec:
               resources:
                 requests:
                   storage: 10Gi
+    defaultRules:
+      rules:
+        kubeProxy: false
     alertmanager:
       alertmanagerSpec:
         # Mount the secret containing your Slack webhook URL
