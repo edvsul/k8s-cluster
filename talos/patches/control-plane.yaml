@@ -30,3 +30,15 @@ name: PodSecurity
 configuration:
   defaults:
     enforce: privileged
+---
+# Talos binds these metrics endpoints to 127.0.0.1 by default, so kube-prometheus-stack
+# can't scrape them (KubeControllerManagerDown / KubeSchedulerDown). Ports stay TLS + authn/z.
+apiVersion: v1alpha1
+kind: KubeControllerManagerConfig
+extraArgs:
+  bind-address: 0.0.0.0
+---
+apiVersion: v1alpha1
+kind: KubeSchedulerConfig
+extraArgs:
+  bind-address: 0.0.0.0
