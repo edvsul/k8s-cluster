@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: postgres
-        image: postgres:18-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15 # 18.4
+        image: postgres:19-alpine@sha256:8b0ff4cdf221f0c53d7fcda681d3b461be725c492cd881c5ec9c0ad25023f188 # 18.4
         ports:
         - containerPort: 5432
         envFrom:
