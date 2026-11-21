@@ -1,9 +1,8 @@
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
 metadata:
   name: pod-security-standards-restricted
   annotations:
-    pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
     policies.kyverno.io/title: Pod Security Standards (Restricted) + Best Practices
     policies.kyverno.io/category: Pod Security Standards (Restricted)
     policies.kyverno.io/severity: high
@@ -12,285 +11,87 @@ metadata:
       Implements the complete Pod Security Standards restricted profile plus additional
       best practices including required probes and resource limits.
 spec:
-  validationFailureAction: Enforce
-  background: true
-  rules:
-    - name: require-drop-all-capabilities
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
-                - cilium-test-1
-      preconditions:
-        all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
-            operator: NotEquals
-            value: DELETE
-      validate:
-        message: Containers must drop `ALL` capabilities.
-        foreach:
-          - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
-            deny:
-              conditions:
-                all:
-                  - key: ALL
-                    operator: AnyNotIn
-                    value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+  validationActions:
+    - Deny
+  evaluation:
+    background:
+      enabled: true
+  autogen:
+    podControllers:
+      controllers:
+        - daemonsets
+        - deployments
+        - statefulsets
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - kube-system
+            - kube-public
+            - kube-node-lease
+            - longhorn-system
+            - monitoring
+            - kyverno
+            - flux-system
+            - renovate
+            - cilium-test-1
+  variables:
+    - name: allContainers
+      expression: >-
+        object.spec.containers +
+        object.spec.?initContainers.orValue([]) +
+        object.spec.?ephemeralContainers.orValue([])
+  validations:
+    # require-drop-all-capabilities
+    - expression: >-
+        variables.allContainers.all(c,
+          c.?securityContext.?capabilities.?drop.orValue([]).exists(d, d.upperAscii() == 'ALL'))
+      message: Containers must drop `ALL` capabilities.
 
-    - name: disallow-privilege-escalation
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
-                - cilium-test-1
-      preconditions:
-        all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
-            operator: NotEquals
-            value: DELETE
-      validate:
-        cel:
-          variables:
-            - name: allContainers
-              expression: object.spec.containers +  object.spec.?initContainers.orValue([]) +  object.spec.?ephemeralContainers.orValue([])
-          expressions:
-            - expression: variables.allContainers.all(container,  container.?securityContext.allowPrivilegeEscalation.orValue(true) == false)
-              message: Privilege escalation is disallowed.  All containers must set the securityContext.allowPrivilegeEscalation field to `false`.
+    # disallow-privilege-escalation
+    - expression: >-
+        variables.allContainers.all(c,
+          c.?securityContext.?allowPrivilegeEscalation.orValue(true) == false)
+      message: Privilege escalation is disallowed. All containers must set the securityContext.allowPrivilegeEscalation field to `false`.
 
-    - name: require-run-as-nonroot
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
-                - cilium-test-1
-      preconditions:
-        all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
-            operator: NotEquals
-            value: DELETE
-      validate:
-        message: "Running as root is not allowed. Set runAsNonRoot: true"
-        anyPattern:
-          - spec:
-              securityContext:
-                runAsNonRoot: true
-              =(ephemeralContainers):
-                - =(securityContext):
-                    =(runAsNonRoot): true
-              =(initContainers):
-                - =(securityContext):
-                    =(runAsNonRoot): true
-              containers:
-                - =(securityContext):
-                    =(runAsNonRoot): true
-          - spec:
-              =(ephemeralContainers):
-                - securityContext:
-                    runAsNonRoot: true
-              =(initContainers):
-                - securityContext:
-                    runAsNonRoot: true
-              containers:
-                - securityContext:
-                    runAsNonRoot: true
+    # require-run-as-nonroot: either pod-level true (containers may not override to false),
+    # or every container sets it to true
+    - expression: >-
+        (object.spec.?securityContext.?runAsNonRoot.orValue(false) == true &&
+          variables.allContainers.all(c, c.?securityContext.?runAsNonRoot.orValue(true) == true)) ||
+        variables.allContainers.all(c, c.?securityContext.?runAsNonRoot.orValue(false) == true)
+      message: "Running as root is not allowed. Set runAsNonRoot: true"
 
-    - name: require-run-as-non-root-user
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
-                - cilium-test-1
-      preconditions:
-        all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
-            operator: NotEquals
-            value: DELETE
-      validate:
-        message: "Running as root user (UID 0) is not allowed. Set runAsUser > 0"
-        pattern:
-          spec:
-            =(securityContext):
-              =(runAsUser): ">0"
-            =(ephemeralContainers):
-              - =(securityContext):
-                  =(runAsUser): ">0"
-            =(initContainers):
-              - =(securityContext):
-                  =(runAsUser): ">0"
-            containers:
-              - =(securityContext):
-                  =(runAsUser): ">0"
+    # require-run-as-non-root-user: runAsUser, where set, must be > 0
+    - expression: >-
+        object.spec.?securityContext.?runAsUser.orValue(1) > 0 &&
+        variables.allContainers.all(c, c.?securityContext.?runAsUser.orValue(1) > 0)
+      message: "Running as root user (UID 0) is not allowed. Set runAsUser > 0"
 
-    - name: restrict-seccomp-strict
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
-                - cilium-test-1
-      preconditions:
-        all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
-            operator: NotEquals
-            value: DELETE
-      validate:
-        message: "Seccomp profile must be RuntimeDefault or Localhost"
-        pattern:
-          spec:
-            =(securityContext):
-              =(seccompProfile):
-                type: "RuntimeDefault | Localhost"
-            =(ephemeralContainers):
-              - =(securityContext):
-                  =(seccompProfile):
-                    type: "RuntimeDefault | Localhost"
-            =(initContainers):
-              - =(securityContext):
-                  =(seccompProfile):
-                    type: "RuntimeDefault | Localhost"
-            containers:
-              - =(securityContext):
-                  =(seccompProfile):
-                    type: "RuntimeDefault | Localhost"
+    # restrict-seccomp-strict: seccompProfile, where set, must be RuntimeDefault or Localhost
+    - expression: >-
+        object.spec.?securityContext.?seccompProfile.?type.orValue('RuntimeDefault') in ['RuntimeDefault', 'Localhost'] &&
+        variables.allContainers.all(c,
+          c.?securityContext.?seccompProfile.?type.orValue('RuntimeDefault') in ['RuntimeDefault', 'Localhost'])
+      message: Seccomp profile must be RuntimeDefault or Localhost
 
-    - name: restrict-volume-types
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
-                - cilium-test-1
-      preconditions:
-        all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
-            operator: NotEquals
-            value: DELETE
-      validate:
-        message: "Only the following types of volumes may be used: configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret."
-        deny:
-          conditions:
-            all:
-              - key: "{{ request.object.spec.volumes[].keys(@)[] || '' }}"
-                operator: AnyNotIn
-                value:
-                  - name
-                  - configMap
-                  - csi
-                  - downwardAPI
-                  - emptyDir
-                  - ephemeral
-                  - persistentVolumeClaim
-                  - projected
-                  - secret
-                  - ""
+    # restrict-volume-types
+    - expression: >-
+        object.spec.?volumes.orValue([]).all(v,
+          has(v.configMap) || has(v.csi) || has(v.downwardAPI) || has(v.emptyDir) ||
+          has(v.ephemeral) || has(v.persistentVolumeClaim) || has(v.projected) || has(v.secret))
+      message: "Only the following types of volumes may be used: configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret."
 
-    - name: require-memory-resources
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      exclude:
-        any:
-          - resources:
-              namespaces:
-                - kube-system
-                - kube-public
-                - kube-node-lease
-                - longhorn-system
-                - monitoring
-                - kyverno
-                - flux-system
-                - renovate
-                - cilium-test-1
-      preconditions:
-        all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
-            operator: NotEquals
-            value: DELETE
-      validate:
-        message: "Memory requests and limits are required for all containers"
-        pattern:
-          spec:
-            containers:
-              - resources:
-                  requests:
-                    memory: "?*"
-                  limits:
-                    memory: "?*"
+    # require-memory-resources (regular containers only, as before)
+    - expression: >-
+        object.spec.containers.all(c,
+          c.?resources.?requests[?'memory'].hasValue() &&
+          c.?resources.?limits[?'memory'].hasValue())
+      message: Memory requests and limits are required for all containers

@@ -19,10 +19,6 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
-    upgrade:
-      allowLegacyPolicies: true
-      legacyPolicyCheck:
-        enabled: false
     admissionController:
       replicas: 2
     backgroundController:
