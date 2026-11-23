@@ -159,4 +159,4 @@ spec:
                   severity: warning
                 annotations:
                   summary: "Kustomization {{ $labels.namespace }}/{{ $labels.name }} is not ready"
-                  description: "Kustomization {{ $labels.namespace }}/{{ $labels.name }} has been not ready for 10 minutes (reason: {{ $labels.reason }}). Check `flux get kustomizations -A`."
+                  description: "Kustomization {{ $labels.namespace }}/{{ $labels.name }} has been not ready for 5 minutes (reason: {{ $labels.reason }}). Check `flux get kustomizations -A`."
