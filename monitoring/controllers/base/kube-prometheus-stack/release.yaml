@@ -154,7 +154,7 @@ spec:
             rules:
               - alert: FluxKustomizationNotReady
                 expr: gotk_resource_info{customresource_kind="Kustomization", ready!="True", suspended!="true"} > 0
-                for: 10m
+                for: 5m
                 labels:
                   severity: warning
                 annotations:
