@@ -56,12 +56,18 @@ spec:
                 requests:
                   storage: 10Gi
     # Flux controllers stopped exporting per-object readiness metrics in v2.1;
-    # kube-state-metrics generates gotk_resource_info from the CR status instead.
+    # kube-state-metrics generates gotk_resource_info from each Flux object's status instead.
     kube-state-metrics:
       rbac:
         extraRules:
           - apiGroups: [kustomize.toolkit.fluxcd.io]
             resources: [kustomizations]
+            verbs: [list, watch]
+          - apiGroups: [helm.toolkit.fluxcd.io]
+            resources: [helmreleases]
+            verbs: [list, watch]
+          - apiGroups: [source.toolkit.fluxcd.io]
+            resources: [gitrepositories, helmrepositories, ocirepositories]
             verbs: [list, watch]
       customResourceState:
         enabled: true
@@ -88,6 +94,86 @@ spec:
                       reason: [status, conditions, "[type=Ready]", reason]
                       suspended: [spec, suspend]
                       revision: [status, lastAppliedRevision]
+              - groupVersionKind:
+                  group: helm.toolkit.fluxcd.io
+                  version: v2
+                  kind: HelmRelease
+                metricNamePrefix: gotk
+                metrics:
+                  - name: resource_info
+                    help: "The current state of a Flux HelmRelease."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      namespace: [metadata, namespace]
+                      customresource_kind: [kind]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      reason: [status, conditions, "[type=Ready]", reason]
+                      suspended: [spec, suspend]
+                      revision: [status, lastAttemptedRevision]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: GitRepository
+                metricNamePrefix: gotk
+                metrics:
+                  - name: resource_info
+                    help: "The current state of a Flux GitRepository."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      namespace: [metadata, namespace]
+                      customresource_kind: [kind]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      reason: [status, conditions, "[type=Ready]", reason]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: HelmRepository
+                metricNamePrefix: gotk
+                metrics:
+                  - name: resource_info
+                    help: "The current state of a Flux HelmRepository."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      namespace: [metadata, namespace]
+                      customresource_kind: [kind]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      reason: [status, conditions, "[type=Ready]", reason]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: OCIRepository
+                metricNamePrefix: gotk
+                metrics:
+                  - name: resource_info
+                    help: "The current state of a Flux OCIRepository."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      namespace: [metadata, namespace]
+                      customresource_kind: [kind]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      reason: [status, conditions, "[type=Ready]", reason]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
     defaultRules:
       rules:
         kubeProxy: false
@@ -115,9 +201,9 @@ spec:
             - matchers:
                 - alertname = "KubePodCrashLoopingOrRestarting"
               receiver: 'slack-alerts'
-            # Route Flux Kustomization failures directly to Slack
+            # Route Flux resource failures (Kustomizations, HelmReleases, sources) directly to Slack
             - matchers:
-                - alertname = "FluxKustomizationNotReady"
+                - alertname = "FluxResourceNotReady"
               receiver: 'slack-alerts'
         receivers:
           - name: 'null'
@@ -150,13 +236,14 @@ spec:
                 annotations:
                   summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is restarting frequently"
                   description: "Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has restarted more than 2 times in the last 15 minutes."
-          - name: flux-kustomization-alerts
+          - name: flux-resource-alerts
             rules:
-              - alert: FluxKustomizationNotReady
-                expr: gotk_resource_info{customresource_kind="Kustomization", ready!="True", suspended!="true"} > 0
+              - alert: FluxResourceNotReady
+                # Only False/Unknown: OCI HelmRepositories have no Ready condition at all.
+                expr: gotk_resource_info{ready=~"False|Unknown", suspended!="true"} > 0
                 for: 5m
                 labels:
                   severity: warning
                 annotations:
-                  summary: "Kustomization {{ $labels.namespace }}/{{ $labels.name }} is not ready"
-                  description: "Kustomization {{ $labels.namespace }}/{{ $labels.name }} has been not ready for 5 minutes (reason: {{ $labels.reason }}). Check `flux get kustomizations -A`."
+                  summary: "{{ $labels.customresource_kind }} {{ $labels.namespace }}/{{ $labels.name }} is not ready"
+                  description: "{{ $labels.customresource_kind }} {{ $labels.namespace }}/{{ $labels.name }} has been not ready for 5 minutes (reason: {{ $labels.reason }}). Check `flux get all -A --status-selector ready=false`."
