@@ -55,6 +55,39 @@ spec:
               resources:
                 requests:
                   storage: 10Gi
+    # Flux controllers stopped exporting per-object readiness metrics in v2.1;
+    # kube-state-metrics generates gotk_resource_info from the CR status instead.
+    kube-state-metrics:
+      rbac:
+        extraRules:
+          - apiGroups: [kustomize.toolkit.fluxcd.io]
+            resources: [kustomizations]
+            verbs: [list, watch]
+      customResourceState:
+        enabled: true
+        config:
+          spec:
+            resources:
+              - groupVersionKind:
+                  group: kustomize.toolkit.fluxcd.io
+                  version: v1
+                  kind: Kustomization
+                metricNamePrefix: gotk
+                metrics:
+                  - name: resource_info
+                    help: "The current state of a Flux Kustomization."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      namespace: [metadata, namespace]
+                      customresource_kind: [kind]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      reason: [status, conditions, "[type=Ready]", reason]
+                      suspended: [spec, suspend]
+                      revision: [status, lastAppliedRevision]
     defaultRules:
       rules:
         kubeProxy: false
@@ -82,6 +115,10 @@ spec:
             - matchers:
                 - alertname = "KubePodCrashLoopingOrRestarting"
               receiver: 'slack-alerts'
+            # Route Flux Kustomization failures directly to Slack
+            - matchers:
+                - alertname = "FluxKustomizationNotReady"
+              receiver: 'slack-alerts'
         receivers:
           - name: 'null'
           - name: 'slack-alerts'
@@ -92,8 +129,10 @@ spec:
                 text: >-
                   {{ range .Alerts }}
                   *Namespace:* {{ .Labels.namespace }}
-                  *Pod:* {{ .Labels.pod }}
-                  *Container:* {{ .Labels.container }}
+                  {{ if .Labels.pod }}*Pod:* {{ .Labels.pod }}
+                  *Container:* {{ .Labels.container }}{{ end }}
+                  {{ if .Labels.customresource_kind }}*{{ .Labels.customresource_kind }}:* {{ .Labels.name }}
+                  *Reason:* {{ .Labels.reason }}{{ end }}
                   *Summary:* {{ .Annotations.summary }}
                   *Details:* {{ .Annotations.description }}
                   {{ end }}
@@ -111,3 +150,13 @@ spec:
                 annotations:
                   summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is restarting frequently"
                   description: "Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has restarted more than 2 times in the last 15 minutes."
+          - name: flux-kustomization-alerts
+            rules:
+              - alert: FluxKustomizationNotReady
+                expr: gotk_resource_info{customresource_kind="Kustomization", ready!="True", suspended!="true"} > 0
+                for: 10m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Kustomization {{ $labels.namespace }}/{{ $labels.name }} is not ready"
+                  description: "Kustomization {{ $labels.namespace }}/{{ $labels.name }} has been not ready for 10 minutes (reason: {{ $labels.reason }}). Check `flux get kustomizations -A`."
