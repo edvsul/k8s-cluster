@@ -8,6 +8,7 @@ age.agekey
 controlplane.yaml
 talosconfig
 worker.yaml
+.DS_Store
 
 # Decrypted sops working files and database dumps — never commit
 *-plain.yaml
