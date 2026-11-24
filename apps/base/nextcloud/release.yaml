@@ -80,9 +80,9 @@ spec:
       size: 40Gi
     resources:
       requests:
-        memory: 2Gi
+        memory: 512Mi
       limits:
-        memory: 6Gi
+        memory: 2Gi
     startupProbe:
       enabled: true
     phpClientHttpsFix: # Fixes the nextcloud login issue
@@ -91,6 +91,7 @@ spec:
       enabled: false # turn off SQLite
     redis:
       enabled: true
+      architecture: standalone
       auth:
         enabled: false
       master:
