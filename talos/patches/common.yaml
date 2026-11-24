@@ -1,5 +1,7 @@
 apiVersion: v1alpha1
 kind: KubeletConfig
+extraArgs:
+  rotate-server-certificates: true
 config:
   imageGCHighThresholdPercent: 70
   imageGCLowThresholdPercent: 50
