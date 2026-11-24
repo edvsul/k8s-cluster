@@ -1,0 +1,32 @@
+# Approves kubelet serving-certificate CSRs (kubelet serverTLSBootstrap, set in
+# talos/patches/common.yaml). Kubernetes never auto-approves these, and metrics-server
+# needs CA-signed kubelet certs to verify the kubelets it scrapes.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kubelet-csr-approver
+  namespace: kube-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: kubelet-csr-approver
+      version: "1.2.16"
+      sourceRef:
+        kind: HelmRepository
+        name: kubelet-csr-approver
+        namespace: kube-system
+      interval: 12h
+  values:
+    # Only approve CSRs from our own nodes, for addresses on the home LAN
+    providerRegex: ^(control-plane|worker-[0-9]+)$
+    providerIpPrefixes:
+      - 10.0.0.0/24
+    # Node hostnames aren't in DNS; rely on the name regex and IP prefixes instead
+    bypassDnsResolution: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        memory: 64Mi
