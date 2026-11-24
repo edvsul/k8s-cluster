@@ -8,3 +8,5 @@ resources:
   - goldpinger
   - reflector
   - tailscale
+  - kubelet-csr-approver
+  #- metrics-server
