@@ -89,6 +89,7 @@ spec:
         memory: 2Gi
     hpa:
       enabled: true
+      minPods: 2
     startupProbe:
       enabled: true
       failureThreshold: 60 # Give around 10 minutes to startup
