@@ -28,6 +28,8 @@ spec:
     firefly-db:
       enabled: false
     firefly-iii:
+      autoscaling:
+        enabled: true
       image:
         # Chart 0.10.2 defaults to appVersion 6.5.9, but data-importer 2.3.x
         # requires Firefly III 6.6.0 or later.
@@ -55,10 +57,10 @@ spec:
             - ALL
       resources:
         requests:
-          memory: 256Mi
+          memory: 100Mi
           cpu: 50m
         limits:
-          memory: 768Mi
+          memory: 500i
       ingress:
         enabled: true
         hosts:
