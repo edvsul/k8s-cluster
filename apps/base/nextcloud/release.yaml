@@ -24,7 +24,6 @@ spec:
     valuesKey: password
     targetPath: nextcloud.password
   values:
-    replicaCount: 2
     nextcloud:
       host: nextcloud.edvsul.org
       securityContext:
@@ -88,6 +87,8 @@ spec:
         memory: 512Mi
       limits:
         memory: 2Gi
+    hpa:
+      enabled: true
     startupProbe:
       enabled: true
       failureThreshold: 60 # Give around 10 minutes to startup
