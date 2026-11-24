@@ -107,6 +107,12 @@ spec:
       master:
         persistence:
           enabled: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            memory: 192Mi
     mariadb:
       enabled: true
       primary:
