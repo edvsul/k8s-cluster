@@ -9,4 +9,4 @@ resources:
   - reflector
   - tailscale
   - kubelet-csr-approver
-  #- metrics-server
+  - metrics-server

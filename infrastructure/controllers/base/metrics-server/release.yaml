@@ -1,0 +1,28 @@
+# Serves the Metrics API (kubectl top, HorizontalPodAutoscaler). Verifies kubelet TLS,
+# so it needs the CA-signed kubelet certs that kubelet-csr-approver approves.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: metrics-server
+  namespace: kube-system
+spec:
+  interval: 30m
+  dependsOn:
+    - name: kubelet-csr-approver
+  chart:
+    spec:
+      chart: metrics-server
+      version: "3.14.0"
+      sourceRef:
+        kind: HelmRepository
+        name: metrics-server
+        namespace: kube-system
+      interval: 12h
+  install:
+    remediation:
+      # Stays unready until the Talos kubelet patch is rolled out and kubelets hold
+      # CA-signed certs; keep retrying instead of giving up after the first failure.
+      retries: -1
+  upgrade:
+    remediation:
+      retries: 3
