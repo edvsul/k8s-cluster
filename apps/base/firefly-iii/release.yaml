@@ -39,8 +39,7 @@ spec:
           ENABLE_EXCHANGE_RATES: "true"
         existingSecret: firefly-iii-credentials
       persistence:
-        storageClassName: longhorn-k8s-cluster
-        storage: 2Gi
+        enabled: false
       podSecurityContext:
         runAsUser: 33
         runAsGroup: 33
@@ -59,6 +58,10 @@ spec:
           cpu: 50m
         limits:
           memory: 500Mi
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 3
       ingress:
         enabled: true
         hosts:
