@@ -10,3 +10,35 @@ spec:
   concurrency: 1
   groups:
     - default
+---
+# Longhorn works at the block level: blocks freed by the filesystem (e.g. Prometheus
+# deleting compacted/expired TSDB blocks) stay allocated until fstrim hands them back.
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: filesystem-trim
+  namespace: longhorn-system
+spec:
+  cron: "0 4 * * 0" # weekly, Sunday 04:00 UTC (after the 03:00 backup)
+  task: filesystem-trim
+  retain: 0
+  concurrency: 1
+  groups:
+    - default
+    - no-backup
+---
+# Deletes system-generated snapshots (e.g. from replica rebuilds) and purges snapshots
+# already marked removed. Backup-job snapshots are user-created and not touched.
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: snapshot-cleanup
+  namespace: longhorn-system
+spec:
+  cron: "30 3 * * 0" # weekly, Sunday 03:30 UTC (before the trim)
+  task: snapshot-cleanup
+  retain: 0
+  concurrency: 1
+  groups:
+    - default
+    - no-backup

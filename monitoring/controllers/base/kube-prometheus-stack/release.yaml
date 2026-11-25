@@ -47,7 +47,8 @@ spec:
             metadata:
               labels:
                 # Opt out of the Longhorn "default" S3 backup group: PVC labels override the
-                # volume's, and "no-backup" has no RecurringJob attached.
+                # volume's, and "no-backup" only gets the weekly snapshot-cleanup and
+                # filesystem-trim jobs (infrastructure/configs/staging/longhorn/recurring-job.yaml).
                 recurring-job.longhorn.io/source: enabled
                 recurring-job-group.longhorn.io/no-backup: enabled
             spec:
