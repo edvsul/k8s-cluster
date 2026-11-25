@@ -23,9 +23,26 @@ spec:
     name: nextcloud-creds
     valuesKey: password
     targetPath: nextcloud.password
+  # Mailgun SMTP credentials (Domain settings → SMTP credentials), in secrets.yaml
+  - kind: Secret
+    name: nextcloud-smtp
+    valuesKey: username
+    targetPath: nextcloud.mail.smtp.name
+  - kind: Secret
+    name: nextcloud-smtp
+    valuesKey: password
+    targetPath: nextcloud.mail.smtp.password
   values:
     nextcloud:
       host: nextcloud.edvsul.org
+      # Outgoing mail (welcome emails, password resets) via Mailgun's EU region.
+      # The chart sets SMTP_* env vars, which override anything set in the admin UI.
+      mail:
+        enabled: true
+        fromAddress: nextcloud
+        domain: mg.edvsul.org
+        smtp:
+          host: smtp.eu.mailgun.org
       securityContext:
         allowPrivilegeEscalation: false
         runAsNonRoot: true
