@@ -37,6 +37,9 @@ spec:
           DB_HOST: firefly-iii-db
           TZ: "Europe/Copenhagen"
           ENABLE_EXCHANGE_RATES: "true"
+          # Default "file" sessions are per-pod; with >1 replica logins break (419) as
+          # requests hop between pods. Store them in Postgres (sessions table) instead.
+          SESSION_DRIVER: database
         existingSecret: firefly-iii-credentials
       persistence:
         enabled: false
