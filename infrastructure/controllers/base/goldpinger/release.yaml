@@ -15,7 +15,7 @@ spec:
         namespace: goldpinger
       interval: 12h
   values:
-    golpinger:
+    goldpinger:
       udp:
         enabled: true
         port: 6969
